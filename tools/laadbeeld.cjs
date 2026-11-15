@@ -1,4 +1,4 @@
-// Maakt de achtergrond van het laadscherm: je poppetje voor de Sint-Petrusbasiliek aan de Steenstraat (1920 x 1080,
+// Maakt de achtergrond van het laadscherm: je poppetje in de Steenstraat met de basiliek aan het eind (1920 x 1080,
 // zonder knoppen en teksten), opgeslagen als public/laadbeeld.jpg en een kleine versie public/laadbeeld-klein.jpg.
 // Gebruik: npm run build && npx vite preview --port 4173 &   en dan   node tools/laadbeeld.cjs
 // Heeft Python met Pillow nodig om het beeld als JPEG in twee maten op te slaan.
@@ -19,15 +19,14 @@ const { chromium } = require('playwright');
   for (let i = 0; i < 8; i++) { await page.waitForTimeout(300); if (!(await page.evaluate(() => game.ui.dialogOpen)) && i > 1) break; await page.evaluate(() => document.getElementById('dialog').click()); }
   const url = await page.evaluate(() => {
     const g = window.game, p = g.player;
-    // voor de Sint-Petrusbasiliek, aan de kant van de Steenstraat: jouw poppetje in beeld, de toren erachter
+    // in de Steenstraat, met de vlaggetjes en de toren van de Sint-Petrusbasiliek aan het eind; je poppetje vooraan
     const T = [343.35, 226.85];
     let best = null;
-    for (const [x, z] of g.world.streetPath('Steenstraat')) { const d = Math.hypot(x - T[0], z - T[1]); if (!best || d < best.d) best = { d, x, z }; }
-    const dx = best.x - T[0], dz = best.z - T[1], dl = Math.hypot(dx, dz) || 1;
-    [p.x, p.z] = g.world.resolve(T[0] + (dx / dl) * (dl + 4), T[1] + (dz / dl) * (dl + 4), 0.5);
-    const h = Math.atan2(T[0] - p.x, T[1] - p.z) + 0.35; // iets schuin, zodat je het gezicht half ziet
-    p.heading = h + Math.PI; p.speed = 0; p.group.visible = true;
-    g.camYaw = Math.atan2(p.x - T[0], p.z - T[1]); g.camPitch = 0.06; g.camDist = 7.5; g.lastManualLook = g.time + 1e6;
+    for (const [x, z] of g.world.streetPath('Steenstraat')) { const d = Math.hypot(x - T[0], z - T[1]); if (x < T[0] && (!best || Math.abs(d - 80) < Math.abs(best.d - 80))) best = { d, x, z }; }
+    [p.x, p.z] = g.world.resolve(best.x, best.z, 0.5);
+    const away = Math.atan2(p.x - T[0], p.z - T[1]); // van de toren af, naar de camera
+    p.heading = away + 0.5; p.speed = 0; p.group.visible = true; // half naar de camera gedraaid
+    g.camYaw = away - 0.12; g.camPitch = 0.04; g.camDist = 6.5; g.lastManualLook = g.time + 1e6;
     if (g.timeOfDay !== 15) { g.timeOfDay = 15; g.applyTime(); }
     g.clock.getDelta();
     for (let i = 0; i < 3; i++) { g.tickInner(); g.updateCamera(0, true); }
