@@ -235,7 +235,7 @@ export function buildFitnessFront(fac, f) {
 // ------------------------------------------------------------ sportzaal binnen
 
 Interiors.prototype.build_fitness = function () {
-  const r = new Room(this.scene, this.count++, { w: 14, d: 10, h: 3.6, floor: { map: tiles('#2c2e33', '#24262a') }, wall: 0xf1eff2, name: 'Anytime Fitness', warm: 0xf3ecff });
+  const r = new Room(this.scene, this.count++, { w: 14, d: 10, h: 3.6, floor: { map: tiles('#2c2e33', '#24262a') }, wall: 0xf1eff2, name: 'FysioHolland', warm: 0xf3ecff }); // in Boxmeer de oefenzaal van FysioHolland
   // paarse wand en een lange spiegel
   const accent = new THREE.Mesh(new THREE.PlaneGeometry(14, 3.6), std(PURPLE, { roughness: 0.7 }));
   accent.position.set(0, 1.8, -4.98);
@@ -243,7 +243,7 @@ Interiors.prototype.build_fitness = function () {
   const mirror = new THREE.Mesh(new THREE.PlaneGeometry(9, 2.1), new THREE.MeshStandardMaterial({ color: 0xd5dde3, metalness: 1, roughness: 0.06 }));
   mirror.position.set(1, 1.45, -4.96);
   r.group.add(mirror);
-  const poster = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.8), new THREE.MeshBasicMaterial({ map: signTexture('Geen excuses', { bg: '#5b2a86', fg: '#ffffff', font: '800 120px "Baloo 2", sans-serif', sub: 'alleen resultaten', subFont: '600 52px Inter, sans-serif', w: 1024, h: 384 }) }));
+  const poster = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.8), new THREE.MeshBasicMaterial({ map: signTexture('Blijf bewegen', { bg: '#00857c', fg: '#ffffff', font: '800 120px "Baloo 2", sans-serif', sub: 'oefenzaal', subFont: '600 52px Inter, sans-serif', w: 1024, h: 384 }) }));
   poster.position.set(-5.2, 2.5, -4.95);
   r.group.add(poster);
   // lichtbanen aan het plafond
@@ -506,7 +506,7 @@ function paintGymParts(u, shirt, skin) {
 
 // Ingedrukt houden = curlen, bovenin aanspannen tot de ring vol is, dan loslaten.
 // Te vroeg loslaten of te lang blijven hangen kost punten en kracht. Doel: pomp op 100% binnen de tijd.
-export function startCurls(g, { limit = 50, shirt = 0xe8a33d, skin = 0xf0c8a0, title = 'Biceps pompen', tiers: tierList = null, coach: coachList = null } = {}) {
+export function startCurls(g, { limit = 50, shirt = 0xe8a33d, skin = 0xf0c8a0, title = 'Biceps pompen', tiers: tierList = null, coach: coachList = null, note = ['Zaterdag', 'MOSAQUA!'] } = {}) {
   const ov = document.createElement('div');
   ov.className = 'mini-overlay';
   ov.innerHTML = `<div class="mini-head"><b>${title}</b><span class="mini-score"></span><button class="mini-stop" type="button">Stoppen</button></div><canvas class="mini-canvas"></canvas><div class="mini-hint">${g.input.isTouch ? 'Hou je vinger op het scherm om te curlen. Bovenin vasthouden tot de ring vol is, dan loslaten.' : 'Hou spatie of E (of de muis) ingedrukt om te curlen. Bovenin vasthouden tot de ring vol is, dan loslaten.'}</div>`;
@@ -630,7 +630,7 @@ export function startCurls(g, { limit = 50, shirt = 0xe8a33d, skin = 0xf0c8a0, t
         const mx = W * 0.2, my = 8 * u, mw = W * 0.6;
         ctx.save(); ctx.translate(mx + mw - 9 * u, my + 9 * u); ctx.rotate(0.08);
         ctx.fillStyle = '#5d4037'; ctx.font = `700 ${2.2 * u}px Inter, sans-serif`; ctx.textAlign = 'center';
-        ctx.fillText('Zaterdag', 0, -1.2 * u); ctx.fillText('MOSAQUA!', 0, 2 * u); ctx.restore();
+        ctx.fillText(note[0], 0, -1.2 * u); ctx.fillText(note[1], 0, 2 * u); ctx.restore();
         // jij, van opzij voor de spiegel (dan zie je de curl het best)
         const cx = W / 2 - 3 * u, sh = 30 * u; // schouder
         ctx.drawImage(A.body.c, cx - A.body.ax, sh - A.body.ay);

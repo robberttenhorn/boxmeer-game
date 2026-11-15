@@ -1,13 +1,13 @@
-// SixSense: drie flyers met een kortingscode liggen verspreid door het dorp (ook op de kaart).
-// Heb je ze alle drie, dan komt er een zwarte bus met een grote roze 6 voorrijden. Instappen,
+// Noblesse: drie flyers met een kortingscode liggen verspreid door het dorp (ook op de kaart).
+// Heb je ze alle drie, dan komt er een zwarte bus met een grote gouden N voorrijden. Instappen,
 // de bus rijdt een hoekje om, staat vijf seconden te schommelen en te piepen, en daarna stap je
 // vanzelf weer uit. Niets expliciets: je ziet alleen de bus van buiten.
 import { STORE } from './config.js';
 import * as THREE from 'three';
 
 const KEY = STORE + 'sixsense';
-const CODES = ['SIX-BOKSMER', 'SIX-ERPEL', 'SIX-METWORST'];
-const PINK = '#ff3d9a';
+const CODES = ['NOB-BOKSMER', 'NOB-ERPEL', 'NOB-METWORST'];
+const PINK = '#d4af37'; // goud (de naam PINK is gebleven uit de oude versie)
 
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } }
 function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* negeren */ } }
@@ -18,26 +18,30 @@ function sixTexture(w = 512, h = 512, big = true) {
   if (!big) { x.fillStyle = '#111'; x.fillRect(0, 0, w, h); }
   x.font = `900 ${h * (big ? 0.9 : 0.55)}px "Baloo 2", sans-serif`;
   x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.shadowColor = PINK; x.shadowBlur = h * 0.08;
-  x.fillStyle = PINK; x.fillText('6', w / 2, h * (big ? 0.56 : 0.42));
-  if (!big) { x.shadowBlur = 0; x.fillStyle = '#fff'; x.font = `800 ${h * 0.13}px Inter, sans-serif`; x.fillText('SixSense', w / 2, h * 0.8); }
+  // gouden N met een verloop, zodat het als metaal glimt
+  const y0 = h * (big ? 0.56 : 0.42), fs = h * (big ? 0.9 : 0.55);
+  const gr = x.createLinearGradient(0, y0 - fs * 0.45, 0, y0 + fs * 0.45);
+  gr.addColorStop(0, '#fff3c4'); gr.addColorStop(0.35, '#e8c25a'); gr.addColorStop(0.6, '#b8860b'); gr.addColorStop(1, '#f5d77a');
+  x.shadowColor = 'rgba(212,175,55,0.8)'; x.shadowBlur = h * 0.06;
+  x.fillStyle = gr; x.fillText('N', w / 2, y0);
+  if (!big) { x.shadowBlur = 0; x.fillStyle = '#e8c25a'; x.font = `800 ${h * 0.12}px Inter, sans-serif`; x.fillText('NOBLESSE', w / 2, h * 0.8); }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 
-// flyer op de grond: zwart kaartje met een roze 6, zwevend en draaiend zodat je hem ziet liggen
+// flyer op de grond: zwart kaartje met een gouden N, zwevend en draaiend zodat je hem ziet liggen
 function makeFlyer() {
   const g = new THREE.Group();
-  const card = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.6), new THREE.MeshStandardMaterial({ map: sixTexture(256, 360, false), emissive: 0xff3d9a, emissiveIntensity: 0.25, side: THREE.DoubleSide, roughness: 0.6 }));
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.6), new THREE.MeshStandardMaterial({ map: sixTexture(256, 360, false), emissive: 0xd4af37, emissiveIntensity: 0.25, side: THREE.DoubleSide, roughness: 0.6 }));
   card.position.y = 0.55;
   g.add(card);
-  const glow = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.5, 24), new THREE.MeshBasicMaterial({ color: 0xff3d9a, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }));
+  const glow = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.5, 24), new THREE.MeshBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }));
   glow.rotation.x = -Math.PI / 2; glow.position.y = 0.04;
   g.add(glow);
   g.userData.card = card; g.userData.glow = glow;
   return g;
 }
 
-// zwarte bus met roze 6 op beide zijkanten en een roze lichtstrip eronder
+// zwarte bus met een gouden N op beide zijkanten en een gouden lichtstrip eronder
 function makeSixBus() {
   const g = new THREE.Group();
   const body = new THREE.Group();
@@ -49,7 +53,7 @@ function makeSixBus() {
   box(1.96, 0.7, 1.0, black, 0, 0.75, 2.75); // neus
   box(1.9, 0.6, 0.05, glass, 0, 1.75, 2.42); // voorruit
   for (const s of [-1, 1]) box(0.05, 0.55, 1.2, glass, s * 1.01, 1.85, 1.6);
-  const six = new THREE.MeshStandardMaterial({ map: sixTexture(), transparent: true, emissive: 0xff3d9a, emissiveIntensity: 0.9, emissiveMap: sixTexture() });
+  const six = new THREE.MeshStandardMaterial({ map: sixTexture(), transparent: true, emissive: 0xd4af37, emissiveIntensity: 0.9, emissiveMap: sixTexture() });
   for (const s of [-1, 1]) {
     const p = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 2.1), six);
     p.position.set(s * 1.012, 1.3, -0.5); p.rotation.y = s * Math.PI / 2;
@@ -57,8 +61,8 @@ function makeSixBus() {
   }
   const back6 = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), six);
   back6.position.set(0, 1.5, -2.41); back6.rotation.y = Math.PI; body.add(back6);
-  // roze lichtstrip en koplampen
-  const neon = new THREE.MeshStandardMaterial({ color: 0xff3d9a, emissive: 0xff3d9a, emissiveIntensity: 2.2 });
+  // gouden lichtstrip en koplampen
+  const neon = new THREE.MeshStandardMaterial({ color: 0xd4af37, emissive: 0xd4af37, emissiveIntensity: 2.2 });
   for (const s of [-1, 1]) box(0.04, 0.06, 4.6, neon, s * 1.0, 0.42, 0);
   for (const s of [-1, 1]) box(0.3, 0.14, 0.05, new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff3d6, emissiveIntensity: 1.5 }), s * 0.7, 0.85, 3.26);
   // zwaailicht in de vorm van een hartje op het dak
@@ -136,7 +140,7 @@ export class SixSense {
 
   // voor de kaart
   markers() {
-    return this.flyers.map((f) => ({ key: 'flyer' + f.i, x: f.x, z: f.z, title: 'SixSense-flyer', place: `${f.place} · kortingscode ${this.state.found.length + 1}/3`, color: PINK, glyph: '6', state: 'flyer', stateLabel: 'Flyer', npc: false }));
+    return this.flyers.map((f) => ({ key: 'flyer' + f.i, x: f.x, z: f.z, title: 'Noblesse-flyer', place: `${f.place} · kortingscode ${this.state.found.length + 1}/3`, color: PINK, glyph: 'N', state: 'flyer', stateLabel: 'Flyer', npc: false }));
   }
 
   update(dt) {
@@ -173,7 +177,7 @@ export class SixSense {
   showCard(code, n) {
     const el = document.createElement('div');
     el.className = 'six-card';
-    el.innerHTML = `<div class="six-6">6</div><div class="six-name">SixSense</div><div class="six-deal">20% korting</div><div class="six-code">${code}</div><div class="six-count">${n >= 3 ? 'Alle 3 de codes! Er komt iets aan...' : `Kortingscode ${n} van 3`}</div>`;
+    el.innerHTML = `<div class="six-6">N</div><div class="six-name">Noblesse</div><div class="six-deal">20% korting</div><div class="six-code">${code}</div><div class="six-count">${n >= 3 ? 'Alle 3 de codes! Er komt iets aan...' : `Kortingscode ${n} van 3`}</div>`;
     document.getElementById('hud').appendChild(el);
     setTimeout(() => el.classList.add('out'), 2600);
     setTimeout(() => el.remove(), 3200);
@@ -212,7 +216,7 @@ export class SixSense {
     g.scene.add(bus);
     this.bus = { m: bus, route: r.inPts, s: 0, phase: 'aanrijden', t: 0, onward: r.onward, speed: 12 };
     this.placeOnRoute(this.bus, 0);
-    g.ui.toast('Wat is dat? Een zwarte bus met een grote roze 6 komt eraan...', 3200);
+    g.ui.toast('Wat is dat? Een zwarte bus met een grote gouden N komt eraan...', 3200);
     g.sfx?.play('honk');
   }
 
@@ -254,7 +258,7 @@ export class SixSense {
           b.phase = 'wachten';
           // zijdeur aan de stoepkant: uitnodiging om in te stappen
           const side = new THREE.Vector3(1.6, 0, -0.5).applyEuler(m.rotation).add(m.position);
-          g.extraInteract = { x: side.x, z: side.z, r: 3, label: 'Instappen in de SixSense-bus', short: 'Instappen', action: () => this.board() };
+          g.extraInteract = { x: side.x, z: side.z, r: 3, label: 'Instappen in de Noblesse-bus', short: 'Instappen', action: () => this.board() };
           g.ui.toast('De deur schuift open. Instappen?', 2400);
           g.sfx?.play('door');
         } else if (b.phase === 'hoekje') {

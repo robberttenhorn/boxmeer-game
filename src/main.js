@@ -1760,7 +1760,7 @@ class Game {
       if (this.input.consumeAction()) this.exitCar();
       return;
     }
-    // losse interactie (bijv. instappen in de SixSense-bus)
+    // losse interactie (bijv. instappen in de Noblesse-bus)
     const xi = this.extraInteract;
     if (xi && this.mode === 'walk' && Math.hypot(p.x - xi.x, p.z - xi.z) < xi.r) {
       this.ui.prompt(xi.label);

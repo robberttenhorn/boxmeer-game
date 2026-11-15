@@ -3,7 +3,7 @@
 // Boksmèrse woorden en uitdrukkingen komen uit openbare woordenlijsten van het Boxmeers (gevonden via zoeken,
 // onder andere mijnwoordenboek.nl). Laat ze nakijken door een echte Boksmèrse of Boksmèrs.
 // Historie: het Heilig Bloed (rond 1400 werd in de kerk de wijn bloed toen een priester twijfelde), de
-// Vaartzondag, carnaval met de metworst van zeven el en het criterium Daags na de Tour.
+// Vaartzondag, carnaval met het Metworstrennen (paardenrace om zeven el metworst) en het criterium Daags na de Tour.
 // De mensen in de missies zijn verzonnen.
 import * as THREE from 'three';
 import { makeCharacter, makeBike } from './character.js';
@@ -138,7 +138,7 @@ export function setupBoxmeer(m, g, add) {
   }
   { const s = spotFor('rembrandt'); if (s) add('ijsjuf', 'Achter de ijstoonbank', s, { shirt: 0xf8bbd0, pants: 0x37474f, apron: 0xffffff, hair: 0x5d4037, female: true, hairStyle: 'bun' }); }
   { const s = spotFor('nogus', 3); if (s) add('waard', "De waard van Nog'us", s, { shirt: 0x111111, pants: 0x222222, apron: 0xf5f5f5, hair: 0x3e2723 }); }
-  { const s = spotFor('cleopatra'); if (s) add('grill', 'De grillmeester', s, { shirt: 0xffffff, pants: 0x222222, apron: 0xb71c1c, hair: 0x111111, beard: true }); }
+  { const s = spotFor('kapadokya'); if (s) add('grill', 'De grillmeester van Kapadokya', s, { shirt: 0xffffff, pants: 0x222222, apron: 0xb71c1c, hair: 0x111111, beard: true }); }
   { const s = spotFor('basiliek', 3.5); if (s) add('koster', 'De koster', s, { shirt: 0x263238, pants: 0x212121, hair: 0xbdbdbd, coat: 0x212121 }); }
 
   // renner van Daags na de Tour aan het begin van de Steenstraat (kant van de basiliek)
@@ -179,6 +179,11 @@ export function setupBoxmeer(m, g, add) {
     }
   }
 
+  // oma die boodschappen laat doen in de Steenstraat
+  { const s = spotFor('iciparis', 3.2) || spotFor('albertheijn', 3.5); if (s) add('oma', 'Oma Mien', s, { shirt: 0x8e7cc3, pants: 0x4a4a4a, hair: 0xeeeeee, female: true, hairStyle: 'bun', glasses: true, coat: 0x6d4c41 }); }
+  // jonggezel met paard bij de oefenbaan van het Metworstrennen
+  setupMetworst(m, g, add);
+
   // voorwerpen
   if (m.npcs.grill) g.attachToHand(m.npcs.grill.model, makePuntzak());
 }
@@ -190,21 +195,23 @@ export function boxmeerItems(n) {
     { id: 'bommetje', npc: n.buren, title: 'Bommetje in de achtertuin', place: 'Wieldijkje 9', desc: 'De buren liggen "even" bij het zwembad. Spring drie keer en maak ze kletsnat.' },
     { id: 'straatbbq', npc: n.bbqbaas, title: 'Straat-BBQ Wieldijkje', place: 'Wieldijkje', desc: 'De grillmeester ligt in het zwembad. Bak jij de burgers voor de hele straat?' },
     { id: 'kabouterboom', npc: n.klutje, title: 'Feest in de kabouterboom', place: 'Weijerpark', desc: 'Na het feest in de kabouterboom liggen Klutjes neefjes overal in het park. Breng ze thuis.' },
-    { id: 'revalidatie', npc: n.fysio, title: 'Sterke armen bij FysioHolland', place: 'Rembrandt van Rijnstraat', desc: 'Zeven el metworst draag je niet met spaghetti-armpjes. Train je armen bij de fysio.' },
+    { id: 'revalidatie', npc: n.fysio, title: 'Sterke armen bij FysioHolland', place: 'Rembrandt van Rijnstraat', desc: 'Een paard in toom houden op het Metworstrennen doe je niet met spaghetti-armpjes. Train je armen bij de fysio.' },
     { id: 'tuutjes', npc: n.wooles, title: 'Tuutjes trekken', place: 'Kruidvat, Steenstraat', desc: 'Een zenuwachtige jongen durft niet bij de condoomautomaat. De hele Steenstraat kijkt mee.' },
     { id: 'ijsjes', npc: n.ijsjuf, title: 'IJsjes scheppen', place: 'IJssalon Rembrandt', desc: 'Half Boxmeer staat in de rij. Schep de bolletjes precies zoals besteld.' },
     { id: 'pils', npc: n.waard, title: "Tappen bij Nog'us", place: "Café Nog'us", desc: 'Help de waard achter de tap en drink daarna een pilsje. Daarna wordt het avond (of weer ochtend).', repeat: true },
-    { id: 'gyros', npc: n.grill, title: 'Gyros bij Cleopatra', place: 'Grillroom Cleopatra', desc: 'Snijd het krokante vlees eraf en gooi daarna de borden kapot.' },
+    { id: 'gyros', npc: n.grill, title: 'Gyros snijden bij Kapadokya', place: 'Kapadokya, Steenstraat', desc: 'De hulpkok is er niet. Snijd alleen het krokante vlees van de spies.' },
     { id: 'criterium', npc: n.renner, title: 'Daags na de Tour', place: 'Steenstraat', desc: 'Criterium door de Steenstraat: heen en terug, sneller dan de renner. De rondemissen wachten bij de finish.' },
     { id: 'heiligbloed', npc: n.koster, title: 'Het Heilig Bloed', place: 'Sint-Petrusbasiliek', desc: 'De misswijn is weer "verdwenen". Haal nieuwe flessen bij de Albert Heijn zonder ze te breken.' },
     { id: 'plat', npc: n.opa, title: 'Plat kalle', place: 'Bankje bij het Raadhuisplein', desc: 'Opa overhoort je in het Boksmèrs. Weet jij wat de woorden betekenen?' },
-    { id: 'metworst', npc: n.prins, title: 'De metworst van zeven el', place: 'Raadhuisplein', desc: 'Carnavalsmaandag: de dragers van de metworst zitten nog in de kroeg. Haal ze op met een polonaise.' },
+    { id: 'polonaise', npc: n.prins, title: 'Het gevolg van de prins', place: 'Raadhuisplein', desc: 'Carnaval: het gevolg van Prins Carnaval zit nog in de kroeg. Haal ze op met een polonaise.' },
+    { id: 'boodschappen', npc: n.oma, title: 'Boodschappen voor oma', place: 'Steenstraat', desc: 'Oma Mien heeft een lijstje. Haal alles op in de Steenstraat voordat de koffie koud is.' },
+    { id: 'metworstrennen', npc: n.jonggezel, title: 'Het Metworstrennen', place: 'Oefenbaan aan de rand van het dorp', desc: 'Carnavalsmaandag: de paardenrace om de metworst. Win drie rondes en word Koning van de Metworst.' },
   ].filter((it) => it.npc);
 }
 
 export const BOXMEER_MISSION_OF = {
   buren: 'bommetje', bbqbaas: 'straatbbq', klutje: 'kabouterboom', fysio: 'revalidatie', wooles: 'tuutjes', ijsjuf: 'ijsjes',
-  waard: 'pils', grill: 'gyros', renner: 'criterium', koster: 'heiligbloed', opa: 'plat', prins: 'metworst',
+  waard: 'pils', grill: 'gyros', renner: 'criterium', koster: 'heiligbloed', opa: 'plat', prins: 'polonaise', oma: 'boodschappen',
 };
 
 // ------------------------------------------------------------ missies
@@ -300,11 +307,11 @@ export const boxmeerHandlers = {
   async fysio(npc, N, ui, g) {
     const a = await ui.dialog(N, [
       'Welkom bij FysioHolland. Even kijken... Hm. Rechterarm sterker dan de linker. Muisarm? Te veel op je telefoon? Of iets anders? Ik vraag niks, ik behandel alleen.',
-      'Met carnaval moet de metworst van zeven el gedragen worden. Daar heb je armen voor nodig, geen spaghetti.',
+      'Op carnavalsmaandag is het Metworstrennen. Een paard in toom houden doe je niet met spaghetti-armpjes.',
       'Ingedrukt houden om te curlen, bovenin aanspannen tot de ring vol is, en dan pas loslaten. Niet te lang hangen, anders verzuurt alles.',
     ], ['Pompen maar!', 'Mijn armen zijn prima']);
     if (a !== 0) { await ui.dialog(N, ['Prima? Je kreeg net de deur bijna niet open. Kom terug als je durft.']); return; }
-    this.setActive('revalidatie', 'Sterke armen bij FysioHolland', 'Loop naar de paarse mat bij de spiegel en pak de dumbbells. Pomp je armen naar 100 procent: klaar voor de metworst!', '');
+    this.setActive('revalidatie', 'Sterke armen bij FysioHolland', 'Loop naar de paarse mat bij de spiegel en pak de dumbbells. Pomp je armen naar 100 procent: klaar voor het Metworstrennen!', '');
     const room = g.interiors.room('fitness');
     let go;
     const ready = new Promise((r) => { go = r; });
@@ -319,20 +326,21 @@ export const boxmeerHandlers = {
     room.activeTriggers = [];
     const r = await startCurls(g, {
       limit: 50, shirt: 0xe8a33d, title: 'Sterke armen bij FysioHolland',
-      tiers: [[0, 'Spaghetti-armpjes'], [0.35, 'Gemiddelde Boksmèrs'], [0.7, 'Bijna optocht-klaar'], [1, 'Metworst-drager!']],
-      coach: ['Nog eentje!', 'Denk aan de metworst!', 'Voel die pomp!', 'Netjes, rug recht!', 'Niet opgeven!'],
+      tiers: [[0, 'Spaghetti-armpjes'], [0.35, 'Gemiddelde Boksmèrs'], [0.7, 'Bijna optocht-klaar'], [1, 'Klaar voor de Metworst!']],
+      coach: ['Nog eentje!', 'Denk aan het Metworstrennen!', 'Voel die pomp!', 'Netjes, rug recht!', 'Niet opgeven!'],
+      note: ['Carnavalsmaandag', 'METWORST!'],
     });
     if (!r || this.active?.id !== 'revalidatie') return;
     if (r.ok) {
       await ui.dialog(N, [
-        `${r.perfect} strakke herhalingen. Die armen kunnen zeven el metworst aan. En de rest van de avond ook, als je begrijpt wat ik bedoel.`,
+        `${r.perfect} strakke herhalingen. Met die armen hou je een paard in toom op het Metworstrennen. En de rest van de avond ook, als je begrijpt wat ik bedoel.`,
         'Ik bedoel de polonaise. Waar dacht jij aan?',
       ]);
       if (g.interior) await g.exitInterior();
-      this.complete('revalidatie', 'Metworst-armen!');
+      this.complete('revalidatie', 'Klaar voor de Metworst!');
     } else {
       await ui.dialog(N, [`${Math.round(r.pump * 100)} procent. Nog steeds spaghetti. Even een slokje water en dan nog een setje!`]);
-      this.fail('Nog geen metworst-armen.');
+      this.fail('Nog niet klaar voor de Metworst.');
     }
   },
 
@@ -420,21 +428,21 @@ export const boxmeerHandlers = {
     this.refresh();
   },
 
-  // ---------------------------------------------- Grillroom Cleopatra
+  // ---------------------------------------------- Kapadokya: gyros snijden
   async grill(npc, N, ui, g) {
     const a = await ui.dialog(N, [
-      'Welkom bij Cleopatra! Mijn hulpkok is naar huis. Liefdesverdriet. Hij zegt dat het door de knoflook komt.',
-      'Jij snijdt de gyros. Alleen het donkere, krokante vlees eraf. Het lichte vlees laat je nog even grillen, anders krijgen de gasten rauwe lappen.',
-      'En daarna gooien we de oude borden kapot. Eigenlijk iets Grieks, maar het is gewoon veel leuker dan afwassen.',
+      'Welkom bij Kapadokya! Mijn hulpkok is naar huis. Liefdesverdriet. Hij zegt dat het door de knoflook komt.',
+      'Jij snijdt het vlees van de spies. Alleen het donkere, krokante vlees eraf. Het lichte vlees laat je nog even grillen, anders krijgen de gasten rauwe lappen.',
+      'Zes mooie plakjes, en niet in je vingers snijden. Bloed in de saus is niet de bedoeling. Dat bewaren we voor de basiliek.',
     ], ['Geef dat mes', 'Ik ben vegetariër']);
     if (a !== 0) { await ui.dialog(N, ['Vegetariër? Dan krijg jij een bord knoflooksaus. Je vriendin slaapt vannacht toch op de bank.']); return; }
     if (g.mode === 'car') g.exitCar();
     g.setMode('walk');
-    this.setActive('gyros', 'Gyros bij Cleopatra', 'Snijd zes keer het donkere vlees eraf en gooi daarna de stapel van tien borden kapot, binnen zes seconden.', '');
-    const r = await startGyros(g);
+    this.setActive('gyros', 'Gyros snijden bij Kapadokya', 'Snijd zes keer het donkere, krokante vlees van de spies.', '');
+    const r = await startGyros(g, { plates: false, title: 'Gyros snijden' });
     if (!r || this.active?.id !== 'gyros') return;
     if (r.ok) {
-      await ui.dialog(N, [r.all ? `${r.good} perfecte plakjes en alle borden kapot!` : `${r.good} perfecte plakjes en ${r.plates} van de tien borden kapot.`, 'Hier, een schotel van het huis. Met zoveel knoflook dat je vannacht alleen slaapt. Gegarandeerd.']);
+      await ui.dialog(N, [`${r.good} perfecte plakjes! Jij mag zo achter de spies.`, 'Hier, een schotel van het huis. Met zoveel knoflook dat je vannacht alleen slaapt. Gegarandeerd.']);
       await g.eat(makePuntzak(), 3);
       this.complete('gyros', 'Gyrosmeester van de Steenstraat!');
     } else {
@@ -627,43 +635,65 @@ export const boxmeerHandlers = {
     this.complete('plat', 'Plat kalle: geslaagd!');
   },
 
-  // ---------------------------------------------- carnaval: de metworst van zeven el
+  // ---------------------------------------------- carnaval: het gevolg van de prins
   async prins(npc, N, ui, g) {
-    if (this.active?.id === 'metworst') {
-      await ui.dialog(N, [`Nog ${g.followers.length - g.followersJoined()} dragers te gaan. Schiet op, de metworst wordt koud!`]);
+    if (this.active?.id === 'polonaise') {
+      await ui.dialog(N, [`Nog ${g.followers.length - g.followersJoined()} van mijn gevolg te gaan. Schiet op, de optocht wacht!`]);
       return;
     }
     const a = await ui.dialog(N, [
-      'Alaaf! Het is carnavalsmaandag in Boksmèr, en dan hoort er een metworst bij. Van zeven el. Dat is bijna vijf meter worst.',
-      'Alleen zitten de dragers nog in de kroeg. Sinds vrijdag. Ze denken dat het nog zaterdag is.',
-      'Haal ze op en kom met een polonaise terug naar het Raadhuisplein. Te voet natuurlijk, en snel, voordat iemand anders aan de worst begint te knabbelen.',
-    ], ['Alaaf, ik ga!', 'Ik ben vegetariër']);
-    if (a !== 0) { await ui.dialog(N, ['Vegetariër? Met carnaval? Dan mag jij de mosterd dragen.']); return; }
+      'Alaaf! Het is carnaval in Boksmèr, en een prins zonder gevolg is net een metworst zonder mosterd.',
+      'Mijn gevolg zit nog in de kroeg. Sinds vrijdag. Ze denken dat het nog zaterdag is.',
+      'Haal ze op en kom met een polonaise terug naar het Raadhuisplein. Te voet natuurlijk, en snel!',
+    ], ['Alaaf, ik ga!', 'Ik ben geen feestbeest']);
+    if (a !== 0) { await ui.dialog(N, ['Geen feestbeest? Met carnaval? Dan mag jij de confetti opvegen.']); return; }
     if (g.mode === 'car') g.exitCar();
     g.setMode('walk');
     const n = g.world.isMobile ? 5 : 6;
-    g.startPolonaise(n, { minD: 30, maxD: 140, joinLines: ['Alaaf! Is het al maandag?', 'Wie heeft mijn boks gezien?', 'Metworst? Ik kom!', 'Nog\'us eentje en dan ga ik mee!', 'Joe! Waar is de polonaise?', 'Ik hou van worst!'] });
-    this.setActive('metworst', 'De metworst van zeven el', 'De dragers staan als roze punten op de kaart. Loop erheen, dan lopen ze achter je aan. Breng ze naar het Raadhuisplein.', `0 / ${n} dragers`);
+    g.startPolonaise(n, { minD: 30, maxD: 140, joinLines: ['Alaaf! Is het al maandag?', 'Wie heeft mijn boks gezien?', 'Polonaise? Ik kom!', 'Nog\'us eentje en dan ga ik mee!', 'Joe! Waar is de prins?', 'Ik zie los!'] });
+    this.setActive('polonaise', 'Het gevolg van de prins', 'Het gevolg staat als roze punten op de kaart. Loop erheen, dan lopen ze achter je aan. Breng ze naar het Raadhuisplein.', `0 / ${n} van het gevolg`);
     const plein = g.world.spotNear(2, 2);
     g.setDestination(plein, 300, async () => {
       g.stopPolonaise();
-      // de metworst ligt klaar op het plein
-      const worst = makeMetworst();
-      const [wx, wz] = g.world.resolve(npc.pos.x + 3, npc.pos.z + 2, 3);
-      worst.position.set(wx, g.world.groundAt(wx, wz), wz);
-      g.scene.add(worst);
-      setTimeout(() => g.scene.remove(worst), 60000);
-      await ui.dialog(N, ['Daar zijn ze allemaal! Zeven el metworst, en zes dragers die nog net rechtop staan.', 'Vivat de Metworstkoning! Alaaf!']);
+      await ui.dialog(N, ['Daar zijn ze allemaal! Een beetje scheef, maar compleet.', B('Alaaf! Joe, en tot volgend jaar!', 'Alaaf! Doei, en tot volgend jaar!')]);
       const gy = g.world.groundAt(npc.pos.x, npc.pos.z);
       npc.pose = 'wave'; npc.heading = Math.atan2(g.player.x - npc.pos.x, g.player.z - npc.pos.z);
       for (let k = 0; k < 5; k++) setTimeout(() => { g.fx?.candy(npc.pos.x, gy + 2.1, npc.pos.z, 26, gy, [g.player.x, g.player.z]); g.sfx?.play('pop'); }, k * 420);
       setTimeout(() => { npc.pose = null; }, 3000);
-      this.complete('metworst', 'Vivat de Metworstkoning!');
-    }, (msg) => { g.stopPolonaise(); this.fail(msg || 'Te laat. De metworst is al opgegeten.'); }, {
-      require: () => (g.followersJoined() >= n ? null : `Je hebt pas ${g.followersJoined()} van de ${n} dragers.`),
+      this.complete('polonaise', 'Het gevolg is compleet!');
+    }, (msg) => { g.stopPolonaise(); this.fail(msg || 'Te laat. De optocht is al vertrokken.'); }, {
+      require: () => (g.followersJoined() >= n ? null : `Je hebt pas ${g.followersJoined()} van de ${n}.`),
       violate: () => (g.mode !== 'walk' ? 'Een polonaise doe je te voet!' : null),
     });
   },
+};
+
+boxmeerHandlers.oma = async function (npc, N, ui, g) {
+  const act = this.active;
+  if (act?.id === 'boodschappen') {
+    if (act.left > 0) { await ui.dialog(N, [`Nog ${act.left} dingen, jong. Kijk maar op je lijstje. En niet treuzelen bij de etalages!`]); return; }
+    g.dropProp();
+    await ui.dialog(N, [
+      'Alles! Mijn zalfje, de rookworst, mijn puzzelboek... en wat zit er in dat roze zakje?',
+      'O ja. Van Sylle. Die is voor vanavond, opa weet nog van niks. Liever schik as un neije boks, zeggen ze. Maar soms allebei.',
+    ]);
+    this.complete('boodschappen', 'Oma is blij!');
+    return;
+  }
+  const a = await ui.dialog(N, [
+    B('Joe, jong! Help jij een oud vrouwtje? Mien knieën willen vandaag niet.', 'Hoi, jongen! Help jij een oud vrouwtje? Mijn knieën willen vandaag niet.'),
+    'Ik heb een lijstje: een zalfje bij de Etos, een rookworst bij de HEMA, een puzzelboek bij de Bruna en een pakje ophalen bij Sylle. Niet kijken wat erin zit.',
+    'Binnen drie minuten, dan is de koffie nog warm.',
+  ], ['Komt goed, oma!', 'Ik heb geen tijd']);
+  if (a !== 0) { await ui.dialog(N, ['Geen tijd? Op jouw leeftijd? Ingsullu heb je spijt, jong.']); return; }
+  const stops = [
+    { id: 'etos', what: 'Etos', line: 'Een potje zalf voor de knieën van mevrouw Mien. Zeg maar dat ze het niet op haar boterham moet smeren, zoals vorige keer.' },
+    { id: 'hema', what: 'HEMA', line: 'Eén rookworst, warm, met mosterd apart. Dat zegt ze elke week. En dan eet ze hem op de bank op, met mosterd.' },
+    { id: 'bruna', what: 'Bruna', line: 'Het dikste puzzelboek dat we hebben. Ze zegt dat ze het voor opa koopt. Opa kan niet eens kruiswoorden.' },
+    { id: 'sylle', what: 'Sylle Lingerie', line: 'Het pakje voor mevrouw Mien. Discreet ingepakt, in een roze zakje. Niet openmaken, en vooral niet laten vallen in de Steenstraat.' },
+  ].filter((st) => g.facades.frames[st.id]);
+  if (!stops.length) return;
+  this.startShopping('boodschappen', 'Boodschappen voor oma', stops, 180, npc);
 };
 
 // misswijn van de Albert Heijn naar de basiliek dragen
@@ -720,4 +750,287 @@ function carryWine(act) {
       }],
     });
   }, (msg) => this.fail(msg || 'Te laat, de mis is al begonnen. Met water.'));
+}
+
+// ------------------------------------------------------------ Metworstrennen
+// Feiten (Immaterieel Erfgoed, Wikipedia, Omroep Brabant): een eeuwenoude paardenrace op carnavalsmaandag op het
+// Vortums Veld, een openbare weg tussen Sambeek en Vortum-Mullem. Alleen ongehuwde jongemannen, geboren, getogen
+// en wonend in Boxmeer, die lid zijn van De Metworst, mogen meedoen. Afvalrace in rondes over bijna 800 meter.
+// De winnaar is een jaar Koning van de Metworst en krijgt zeven el metworst, wittebrood, bier en een half
+// varkenskop. Drie keer op rij winnen maakt je Keizer. In de game oefen je op een rechte weg in het speelgebied.
+
+// paard met zadel; benen in twee delen zodat ze kunnen galopperen
+export function makeHorse(color = 0x6b3e1f) {
+  const g = new THREE.Group();
+  const coat = std(color, { roughness: 0.7 });
+  const dark = std(0x1d1410, { roughness: 0.9 });
+  const body = mesh(new THREE.CapsuleGeometry(0.34, 1.2, 6, 14), coat, 0, 1.25, 0);
+  body.rotation.x = Math.PI / 2; body.scale.set(1, 1, 1.12);
+  g.add(body);
+  // nek en hoofd
+  const neck = new THREE.Group(); neck.position.set(0, 1.45, 0.72); g.add(neck);
+  const nk = mesh(new THREE.CylinderGeometry(0.17, 0.27, 0.85, 12), coat, 0, 0.32, 0.12); nk.rotation.x = 0.62; neck.add(nk);
+  const head = new THREE.Group(); head.position.set(0, 0.72, 0.42); neck.add(head);
+  const skull = mesh(new THREE.BoxGeometry(0.22, 0.24, 0.36), coat, 0, 0, 0); head.add(skull);
+  const muzzle = mesh(new THREE.BoxGeometry(0.17, 0.18, 0.32), coat, 0, -0.1, 0.28); muzzle.rotation.x = 0.45; head.add(muzzle);
+  head.add(mesh(new THREE.BoxGeometry(0.175, 0.1, 0.12), dark, 0, -0.2, 0.42)); // neus
+  for (const s of [-1, 1]) {
+    const ear = mesh(new THREE.ConeGeometry(0.04, 0.14, 6), coat, s * 0.07, 0.17, -0.1); ear.rotation.x = -0.2; head.add(ear);
+    head.add(mesh(new THREE.SphereGeometry(0.03, 8, 6), dark, s * 0.11, 0.04, 0.06)); // ogen
+  }
+  // manen en staart
+  for (let i = 0; i < 6; i++) { const m = mesh(new THREE.BoxGeometry(0.05, 0.16, 0.14), dark, 0, 0.1 + i * 0.12, -0.02 + i * 0.07); m.rotation.x = 0.6; neck.add(m); }
+  const tail = new THREE.Group(); tail.position.set(0, 1.4, -0.95); g.add(tail);
+  const tl = mesh(new THREE.CylinderGeometry(0.06, 0.12, 0.75, 8), dark, 0, -0.32, -0.08); tl.rotation.x = -0.25; tail.add(tl);
+  // zadel, dekje en teugels
+  g.add(mesh(new THREE.BoxGeometry(0.72, 0.03, 0.62), std(0x8e1b1b), 0, 1.6, 0.05)); // zadeldekje
+  g.add(mesh(new THREE.BoxGeometry(0.42, 0.08, 0.5), std(0x3e2415, { roughness: 0.5 }), 0, 1.64, 0.05));
+  const rein = mesh(new THREE.TorusGeometry(0.42, 0.012, 4, 18, Math.PI * 0.8), std(0x2b1a10), 0, 1.75, 0.55); rein.rotation.set(Math.PI / 2 - 0.4, 0, Math.PI * 0.1); g.add(rein);
+  // benen
+  const legs = [];
+  for (const [x, z, ph] of [[-0.18, 0.62, 0], [0.18, 0.62, 0.35], [-0.18, -0.58, 0.6], [0.18, -0.58, 0.95]]) {
+    const up = new THREE.Group(); up.position.set(x, 1.12, z); g.add(up);
+    up.add(mesh(new THREE.CylinderGeometry(0.09, 0.07, 0.5, 8), coat, 0, -0.25, 0));
+    const low = new THREE.Group(); low.position.y = -0.5; up.add(low);
+    low.add(mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.5, 8), coat, 0, -0.25, 0));
+    low.add(mesh(new THREE.CylinderGeometry(0.065, 0.075, 0.1, 10), dark, 0, -0.55, 0.01)); // hoef
+    legs.push({ up, low, ph, front: z > 0 });
+  }
+  g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+  let phase = 0;
+  // speed in m/s: stilstaan, draf, galop
+  g.userData.animate = (dt, speed) => {
+    phase += dt * (speed > 0.5 ? 1.2 + speed * 0.13 : 0);
+    const k = Math.min(1, speed / 6);
+    for (const L of legs) {
+      const a = (phase + L.ph) * Math.PI * 2;
+      L.up.rotation.x = Math.sin(a) * 0.55 * k;
+      L.low.rotation.x = (L.front ? -1 : 1) * Math.max(0, Math.sin(a + 1.2)) * 0.9 * k;
+    }
+    const bob = Math.abs(Math.sin(phase * Math.PI * 2)) * 0.08 * k;
+    body.position.y = 1.25 + bob; neck.position.y = 1.45 + bob;
+    neck.rotation.x = Math.sin(phase * Math.PI * 2) * 0.08 * k - (speed < 0.5 ? 0.05 + Math.sin(performance.now() / 900) * 0.04 : 0);
+    tail.rotation.x = 0.3 * k + Math.sin(phase * Math.PI * 4) * 0.1;
+    g.userData.bob = bob;
+  };
+  g.userData.saddleY = 1.66;
+  return g;
+}
+
+// ruiter op een paard (voor de race en voor de jonggezel)
+function makeRider(look, horseColor) {
+  const grp = new THREE.Group();
+  const horse = makeHorse(horseColor);
+  const rider = makeCharacter(look);
+  rider.position.set(0, horse.userData.saddleY - 0.47, -0.02);
+  grp.add(horse, rider);
+  grp.userData.animate = (dt, speed) => {
+    horse.userData.animate(dt, speed);
+    rider.position.y = horse.userData.saddleY - 0.47 + (horse.userData.bob || 0);
+    rider.userData.animate(dt, speed, 'ride');
+  };
+  return grp;
+}
+
+// een rechte baan van ongeveer 320 m op een lange weg aan de rand van het dorp
+function metworstCourse(g) {
+  const w = g.world;
+  let best = null;
+  for (const name of ['Hoogendijk', 'Rollandsestraat', 'Beugenseweg']) {
+    const p = w.streetPath(name).map(([x, z]) => [x, z]);
+    if (p.length < 2) continue;
+    let len = 0; for (let k = 1; k < p.length; k++) len += Math.hypot(p[k][0] - p[k - 1][0], p[k][1] - p[k - 1][1]);
+    if (!best || len > best.len) best = { name, p, len };
+  }
+  if (!best || best.len < 200) return null;
+  const L = Math.min(320, best.len - 10);
+  const out = [best.p[0]];
+  let acc = 0;
+  for (let k = 1; k < best.p.length && acc < L; k++) {
+    const [ax, az] = best.p[k - 1], [bx, bz] = best.p[k];
+    const d = Math.hypot(bx - ax, bz - az);
+    if (acc + d >= L) { const f = (L - acc) / d; out.push([ax + (bx - ax) * f, az + (bz - az) * f]); acc = L; break; }
+    out.push([bx, bz]); acc += d;
+  }
+  return { name: best.name, path: out, len: acc };
+}
+
+export function setupMetworst(m, g, add) {
+  const c = metworstCourse(g);
+  if (!c) return;
+  m.metworstCourse = c;
+  const [x0, z0] = c.path[0], [x1, z1] = c.path[1];
+  const h = Math.atan2(x1 - x0, z1 - z0);
+  // de jonggezel staat naast de start, met zijn paard aan de hand
+  const sx = x0 - Math.cos(h) * 4.5, sz = z0 + Math.sin(h) * 4.5;
+  const npc = add('jonggezel', 'Jonggezel van De Metworst', g.world.resolve(sx, sz, 0.5), { shirt: 0xffffff, pants: 0xf5f5f5, hair: 0x6d4c41, hat: 'helmet', hatColor: 0x1b1b1b, coat: 0xc62828, shoes: 0x1b1b1b });
+  npc.heading = h + Math.PI / 2;
+  const horse = makeHorse(0x3b2414);
+  const hx = sx + Math.sin(h) * 1.6, hz = sz + Math.cos(h) * 1.6;
+  horse.position.set(hx, g.world.groundAt(hx, hz), hz);
+  horse.rotation.y = h + Math.PI / 2;
+  g.scene.add(horse);
+  g.updaters.add((dt) => horse.userData.animate(dt, 0));
+  m.metworstHorse = horse;
+}
+
+
+boxmeerHandlers.jonggezel = async function (npc, N, ui, g) {
+  const c = this.metworstCourse;
+  if (!c) return;
+  const a = await ui.dialog(N, [
+    B('Joe! Weet je wat het is, morgen? Carnavalsmaandag. En dan is het Metworstrennen!', 'Hoi! Weet je wat het is, morgen? Carnavalsmaandag. En dan is het Metworstrennen!'),
+    'Een eeuwenoude paardenrace op het Vortums Veld, tussen Sambeek en Vortum-Mullem. Afvalrondes, man tegen man, over bijna achthonderd meter.',
+    'Alleen vrijgezellen mogen meedoen. Geboren en getogen in Boksmèr, en vooral niet getrouwd. Sommigen zeggen dat het ooit een vruchtbaarheidsritueel was. Dat verklaart waarom de winnaar daarna zoveel aanbidsters heeft.',
+    'Wie wint, is een jaar Koning van de Metworst. Met als prijs zeven el metworst, wittebrood, bier en een half varkenskop. Romantischer wordt het niet.',
+    'Ik heb last van mijn liezen. Rijd jij de oefenrondes? Hier op de ' + c.name + ' doen we net alsof het het Vortums Veld is.',
+  ], ['Zadel op!', 'Ik ben getrouwd']);
+  if (a !== 0) { await ui.dialog(N, ['Getrouwd? Dan mag je alleen nog langs de kant staan juichen. En een metworst kopen, net als iedereen.']); return; }
+  if (g.mode === 'car') g.exitCar();
+  g.setMode('walk');
+  this.setActive('metworstrennen', 'Het Metworstrennen', 'Tik in de maat van de galop: als de naald in het groene vak staat. Te vroeg of te laat en je paard struikelt. Win drie rondes.', 'Voorronde');
+  const act = this.active;
+  const rounds = [
+    { name: 'Voorronde', rival: 'Jonggezel Teun', speed: 11.2, shirt: 0x1e88e5, horse: 0x8d5a2b },
+    { name: 'Halve finale', rival: 'Jonggezel Bram', speed: 12.6, shirt: 0x43a047, horse: 0x2b1a10 },
+    { name: 'Finale', rival: 'De regerend Koning', speed: 13.8, shirt: 0xfdd835, horse: 0xe8e0d0 },
+  ];
+  for (let r = 0; r < rounds.length; r++) {
+    if (this.active !== act) return;
+    this.progress(rounds[r].name);
+    const res = await metworstHeat.call(this, g, c, rounds[r], r);
+    if (!res || this.active !== act) return;
+    if (!res.won) {
+      await ui.dialog(N, [r === 0 ? 'Er al uit in de voorronde! Je paard keek je aan alsof het wilde zeggen: zit stil en laat mij het werk doen.' : `Afgevallen in de ${rounds[r].name.toLowerCase()}. ${rounds[r].rival} gaat door. Volgend jaar beter, en blijf vooral vrijgezel.`]);
+      this.fail('Afgevallen in het Metworstrennen.');
+      return;
+    }
+    if (r < rounds.length - 1) await ui.dialog(N, [r === 0 ? 'Gewonnen! Door naar de halve finale.' : 'Weer gewonnen! Nu de finale, tegen de regerend Koning zelf.']);
+  }
+  // prijs: de metworst van zeven el op schragen, met confetti
+  const end = c.path.at(-1);
+  const worst = makeMetworst();
+  const [wx, wz] = g.world.resolve(end[0] + 3, end[1] + 3, 3);
+  worst.position.set(wx, g.world.groundAt(wx, wz), wz);
+  g.scene.add(worst);
+  setTimeout(() => g.scene.remove(worst), 60000);
+  g.player.x = wx - 2; g.player.z = wz - 2;
+  g.fx?.confetti(g.player.x, g.world.groundAt(g.player.x, g.player.z) + 2.4, g.player.z, 180);
+  g.sfx?.play('cheer');
+  await ui.dialog(N, [
+    'Koning van de Metworst! Hier is je prijs: zeven el metworst, wittebrood, bier en een half varkenskop.',
+    'Officieel word je gekroond onder de Wilhelminaboom, door de beschermvrouwe. Maar dit was maar oefenen, dus je krijgt een knuffel van mij. En van het paard.',
+    'Drie keer op rij winnen en je bent Keizer. Dat is sinds 1900 niemand meer gelukt. Dus blijf vrijgezel, dan hebben we het er volgend jaar over.',
+  ]);
+  this.complete('metworstrennen', 'Koning van de Metworst!');
+};
+BOXMEER_MISSION_OF.jonggezel = 'metworstrennen';
+
+// één ronde: jij tegen een tegenstander, rechtdoor tot de finish
+function metworstHeat(g, c, round, idx) {
+  return new Promise((resolve) => {
+    const path = c.path;
+    const lens = [0];
+    for (let k = 1; k < path.length; k++) lens.push(lens[k - 1] + Math.hypot(path[k][0] - path[k - 1][0], path[k][1] - path[k - 1][1]));
+    const total = lens.at(-1);
+    const at = (s, lane) => {
+      s = Math.max(0, Math.min(total, s));
+      let k = 1; while (k < lens.length - 1 && lens[k] < s) k++;
+      const f = (s - lens[k - 1]) / Math.max(0.001, lens[k] - lens[k - 1]);
+      const [ax, az] = path[k - 1], [bx, bz] = path[k];
+      const h = Math.atan2(bx - ax, bz - az);
+      const x = ax + (bx - ax) * f + Math.cos(h) * lane, z = az + (bz - az) * f - Math.sin(h) * lane;
+      return [x, z, h];
+    };
+    const me = makeRider({ shirt: 0xe8a33d, pants: 0xf5f5f5, hair: 0x3b2a1a, hat: 'helmet', hatColor: 0x1b1b1b }, 0x6b3e1f);
+    const rv = makeRider({ shirt: round.shirt, pants: 0xf5f5f5, hair: 0x5d4037, hat: 'helmet', hatColor: 0x1b1b1b }, round.horse);
+    g.scene.add(me, rv);
+    g.player.group.visible = false;
+    // finishlijn met doek
+    const [fx, fz, fh] = at(total, 0);
+    const banner = makeFinishBanner(9);
+    banner.position.set(fx, g.world.groundAt(fx, fz), fz); banner.rotation.y = fh;
+    g.scene.add(banner);
+    // HUD: ritmebalk zoals bij het bommetje
+    const ov = document.createElement('div');
+    ov.className = 'mini-overlay';
+    ov.innerHTML = `<div class="mini-head"><b>Metworstrennen: ${round.name}</b><span class="mini-score"></span><button class="mini-stop" type="button">Stoppen</button></div><div class="tt-task"><div class="tt-step"></div><div class="tt-hint"></div><div class="tt-bar"><div class="tt-zone" style="left:62%;width:26%"></div><div class="tt-perfect" style="left:71%;width:8%"></div><div class="tt-needle"></div></div></div><div class="mini-hint">${g.input.isTouch ? 'Tik als de naald in het groen staat: dan galoppeert je paard harder' : 'Spatie of E als de naald in het groen staat: dan galoppeert je paard harder'}</div>`;
+    document.getElementById('hud').prepend(ov);
+    document.body.classList.add('pov');
+    ov.querySelector('.mini-stop').addEventListener('click', () => g.missions.stop());
+    ov.addEventListener('pointerdown', (e) => { if (!e.target.closest('.mini-stop')) g.input.actionPressed = true; });
+    const $ = (q) => ov.querySelector(q);
+    $('.tt-step').textContent = `Tegen ${round.rival}`;
+    let t = 0, s = 0, rs = 0, v = 0, rv_v = 0, needle = 0, dirN = 1, stumble = 0, done = false, combo = 0, lastCount = null;
+    const finish = (won) => {
+      if (done) return; done = true;
+      g.minigame = null;
+      setTimeout(() => {
+        ov.remove(); document.body.classList.remove('pov');
+        g.scene.remove(me, rv, banner);
+        g.player.group.visible = true;
+        const [px, pz] = g.world.resolve(...at(Math.min(s, total), 3.2).slice(0, 2), 0.5);
+        g.player.x = px; g.player.z = pz;
+        g.pov = null;
+        resolve({ won });
+      }, won !== null ? 1400 : 0);
+    };
+    // missie gestopt: alles opruimen
+    const prevCleanup = g.missions.active?.cleanup;
+    g.missions.active.cleanup = () => { prevCleanup?.(); if (!done) { done = true; ov.remove(); document.body.classList.remove('pov'); g.scene.remove(me, rv, banner); g.player.group.visible = true; g.pov = null; resolve(null); } };
+    g.minigame = {
+      race: true, actionLabel: null,
+      stop: () => { g.missions.active?.cleanup?.(); },
+      update: (dt) => {
+        if (done) return;
+        t += dt;
+        g.player.lockedFor = true; g.player.speed = 0;
+        const go = t > 3;
+        if (!go) {
+          const cnt = Math.ceil(3 - t);
+          if (cnt !== lastCount) { lastCount = cnt; g.ui.toast(`${cnt}...`, 700); g.sfx?.play('tally'); }
+        } else if (lastCount !== 0) { lastCount = 0; g.ui.toast('Gaan!', 900); g.sfx?.play('whistle'); }
+        // naald heen en weer, sneller als je paard harder gaat (de maat van de galop)
+        const rate = 0.9 + v * 0.06;
+        needle += dirN * dt * rate;
+        if (needle > 1) { needle = 1; dirN = -1; } else if (needle < 0) { needle = 0; dirN = 1; }
+        $('.tt-needle').style.left = `${needle * 100}%`;
+        const press = g.input.consumeAction() || g.input.spacePressed; g.input.spacePressed = false;
+        if (go && press && stumble <= 0) {
+          if (needle >= 0.71 && needle <= 0.79) { v += 3.1; combo++; $('.tt-hint').textContent = combo > 2 ? `Perfect! x${combo}` : 'Perfect!'; g.sfx?.play('tally'); }
+          else if (needle >= 0.62 && needle <= 0.88) { v += 1.9; combo++; $('.tt-hint').textContent = 'Goed zo!'; }
+          else { combo = 0; stumble = 0.7; v *= 0.6; $('.tt-hint').textContent = 'Struikel! Uit de maat.'; g.sfx?.play('fail'); }
+        }
+        if (stumble > 0) stumble -= dt;
+        // snelheid: zakt vanzelf terug naar draf, tot een maximum
+        if (go) { v = Math.min(17, v - (v - 5) * dt * 0.35); if (v < 4) v += dt * 4; } else v = 0;
+        s += v * dt;
+        // tegenstander: rustig opbouwen, met wat variatie, en een klein beetje meegeven als je ver achter ligt
+        if (go) {
+          const want = round.speed * (0.94 + 0.08 * Math.sin(t * 0.9 + idx)) * (rs - s > 35 ? 0.92 : 1);
+          rv_v += (want - rv_v) * Math.min(1, dt * 0.8);
+          rs += rv_v * dt;
+        }
+        const [mx, mz, mh] = at(s, 1.7), [rx, rz, rh] = at(rs, -1.7);
+        me.position.set(mx, g.world.groundAt(mx, mz), mz); me.rotation.y = mh;
+        rv.position.set(rx, g.world.groundAt(rx, rz), rz); rv.rotation.y = rh;
+        me.userData.animate(dt, v); rv.userData.animate(dt, go ? rv_v : 0);
+        g.player.x = mx; g.player.z = mz;
+        // camera schuin achter en naast je paard
+        const back = 7.5, side = 3.2;
+        const cx = mx - Math.sin(mh) * back + Math.cos(mh) * side, cz = mz - Math.cos(mh) * back - Math.sin(mh) * side;
+        const V = g.camera.position.constructor;
+        g.pov = { pos: new V(cx, g.world.groundAt(cx, cz) + 3.4, cz), look: new V(mx + Math.sin(mh) * 6, g.world.groundAt(mx, mz) + 1.6, mz + Math.cos(mh) * 6), snap: t < 0.1 };
+        const gap = s - rs;
+        $('.mini-score').textContent = `${Math.round(Math.max(0, total - s))} m`;
+        g.missions.progress(`${round.name}: ${Math.abs(gap) < 3 ? 'nek aan nek' : gap > 0 ? `jij ${Math.round(gap)} m voor` : `${round.rival} ${Math.round(-gap)} m voor`}`);
+        if (s >= total || rs >= total) {
+          const won = s >= rs;
+          g.ui.toast(won ? 'Eerst over de streep!' : `${round.rival} is eerder binnen...`, 1400);
+          if (won) g.sfx?.play('cheer');
+          finish(won);
+        }
+      },
+    };
+  });
 }

@@ -771,6 +771,20 @@ export function makeCharacter(opts = {}) {
       mw.fill(1);
       tb[0] = accP[0]; tb[1] = -0.52 + accP[1]; tb[2] = accP[2];
       add('head', Math.sin(t * 0.3) * 0.05, Math.sin(t * 0.2) * 0.3);
+    } else if (mode === 'ride') {
+      // paardrijden: schrijlings in het zadel, knieën gebogen langs de flanken, handen vooruit aan de teugels.
+      // Bij galop veert het lichaam mee in de maat van het paard.
+      if (speed > 0.3) phase += dt * (0.9 + speed * 0.11);
+      const ph = phase * Math.PI * 2, k = Math.min(1, speed / 9);
+      const bob = Math.abs(Math.sin(ph)) * k;
+      tb[1] = -0.5 + bob * 0.07;
+      set('hips', 0.12 + k * 0.15); set('spine', 0.18 + k * 0.25 + bob * 0.06); set('chest', 0.08 + k * 0.1);
+      set('neck', -0.2 - k * 0.2); set('head', -0.12 - k * 0.15);
+      set('thL', -1.2, 0, -0.42); set('thR', -1.2, 0, 0.42);
+      set('shL', 1.75); set('shR', 1.75);
+      set('ftL', -0.25); set('ftR', -0.25);
+      set('uaL', -0.75 - k * 0.2, 0, -0.12); set('uaR', -0.75 - k * 0.2, 0, 0.12);
+      set('faL', -0.85 + bob * 0.2, 0, 0.15); set('faR', -0.85 + bob * 0.2, 0, -0.15);
     } else if (mode === 'camera') {
       set('uaR', -1.6, 0, 0.45); set('faR', -1.7);
       set('uaL', -1.0, 0, -0.25); set('faL', -1.1);
@@ -877,7 +891,7 @@ export function makeCharacter(opts = {}) {
     prop.quaternion.copy(qAcc);
   };
 
-  // animatie: speed in m/s, mode 'walk' | 'bike' | 'skate' | 'idle' | 'wave' | 'drink' | 'eat' | 'sit' | 'camera' | 'push'
+  // animatie: speed in m/s, mode 'walk' | 'bike' | 'skate' | 'idle' | 'wave' | 'drink' | 'eat' | 'sit' | 'camera' | 'push' | 'ride'
   root.userData.animate = (dt, speed, mode = 'walk') => {
     const key = pose(dt, speed, mode);
     apply(dt, key);

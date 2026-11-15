@@ -436,8 +436,8 @@ export function startBommetje(g, room) {
 
 // Deel 1: plakjes van de draaiende gyros snijden als het goudbruine stuk bij het mes is.
 // Het mes hakt, het plakje vliegt in de pita, het vet spettert. Deel 2: 'Opa!': borden kapotgooien.
-export function startGyros(g, { need = 6, tries = 9 } = {}) {
-  const ui = overlay(g, 'Gyros!', '<canvas class="mini-canvas"></canvas>', g.input.isTouch ? 'Tik als het donkere, krokante stuk bij het mes is (het mes licht op!). Het lichte vlees laat je nog grillen.' : 'E, spatie of klik als het donkere, krokante stuk bij het mes is (het mes licht op!). Het lichte vlees laat je nog grillen.');
+export function startGyros(g, { need = 6, tries = 9, plates: withPlates = true, title = 'Gyros!' } = {}) {
+  const ui = overlay(g, title, '<canvas class="mini-canvas"></canvas>', g.input.isTouch ? 'Tik als het donkere, krokante stuk bij het mes is (het mes licht op!). Het lichte vlees laat je nog grillen.' : 'E, spatie of klik als het donkere, krokante stuk bij het mes is (het mes licht op!). Het lichte vlees laat je nog grillen.');
   const cv = ui.ov.querySelector('canvas');
   const ctx = cv.getContext('2d');
   fitCanvas(cv);
@@ -722,7 +722,7 @@ export function startGyros(g, { need = 6, tries = 9 } = {}) {
     if (shakeT > 0) ctx.translate((Math.random() - 0.5) * 14 * shakeT, (Math.random() - 0.5) * 14 * shakeT);
     ctx.fillStyle = '#120b07'; ctx.fillRect(-20, -20, W + 40, H + 40);
     const cx = W / 2, top = 18 * u, bot = 78 * u;
-    if (phase === 'snijden') {
+    if (phase === 'snijden' || phase === 'klaar') {
       const a = art.cut || (art.cut = bakeCut(W, H));
       ctx.drawImage(a.bg, 0, 0);
       // gloeiende grill achter het vlees: de gloed flakkert
@@ -825,11 +825,17 @@ export function startGyros(g, { need = 6, tries = 9 } = {}) {
         speed += 0.06;
       }
       ui.score(`🥙 ${good} / ${need} goed  ·  nog ${tries - used} keer`);
-      if (good >= need) {
+      if (good >= need && !withPlates) {
+        // zonder borden gooien: na het snijden meteen klaar
+        phase = 'klaar'; t = 0;
+        flash(ui.ov, 'gold'); popText(ui.ov, 'Gyros klaar!', 50, 40, 'gold big');
+      } else if (good >= need) {
         phase = 'opa'; t = 0; combo.miss();
         ui.ov.querySelector('.mini-hint').textContent = `OPA! Je hebt een stapel van ${PLATES} borden. Elke tik gooit er één kapot. Gooi ze allemaal binnen ${PLATE_TIME} seconden!`;
         flash(ui.ov, 'gold'); popText(ui.ov, 'Gyros klaar!', 50, 40, 'gold big');
       } else if (used >= tries) finish({ ok: false, good });
+    } else if (phase === 'klaar') {
+      if (t > 1.2) finish({ ok: true, good, plates: 0, all: false });
     } else {
       const left = PLATES - thrown;
       if (pr && left > 0 && t < PLATE_TIME) {

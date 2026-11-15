@@ -147,7 +147,7 @@ async function startFinale(m, g, markt) {
   g.sfx?.play('cheer');
   await ui.dialog(waard.name, [
     'Daar is ie! Iedereen, even stil! Dit is degene die heel Boksmèr heeft geholpen.',
-    'Bommetjes in de achtertuin aan het Wieldijkje, burgers op de straat-BBQ, kabouters uit het Weijerpark, misswijn voor de basiliek, de metworst van zeven el... en ga zo maar door.',
+    'Bommetjes in de achtertuin aan het Wieldijkje, burgers op de straat-BBQ, kabouters uit het Weijerpark, misswijn voor de basiliek, Koning van de Metworst... en ga zo maar door.',
     'Daarom ben jij vanaf vandaag Ereburger van Boksmèr! Liever schik as un neije boks!',
     'Muziek! Vuurwerk! En een rondje pils van de zaak! Iedereen achter de ereburger aan: polonaise!',
   ]);

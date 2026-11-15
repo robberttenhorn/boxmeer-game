@@ -4,6 +4,9 @@
 // - de straatbarbecue op het Wieldijkje (partytent, lange tafel, vlaggetjes en de barbecue).
 // De vorm van tuin en meubels is een benadering; de plek van het zwembad komt van de luchtfoto.
 import * as THREE from 'three';
+import { buildHouse9, buildWieldijkjeGardens } from './wieldijkje.js';
+import { buildBasiliek } from './basiliek.js';
+import { buildSteenstraat } from './steenstraat.js';
 
 const std = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.75, ...extra });
 const box = (w, h, d, mat, x, y, z, ry = 0) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.rotation.y = ry; m.castShadow = true; m.receiveShadow = true; return m; };
@@ -16,6 +19,11 @@ export function buildBoxmeerWorld(g) {
   try { out.pool = buildPool(g, L); } catch (e) { console.warn('zwembad Wieldijkje 9', e); }
   try { out.kabouterboom = buildKabouterboom(g); } catch (e) { console.warn('kabouterboom', e); }
   try { out.bbq = buildStreetBbq(g); } catch (e) { console.warn('straatbarbecue', e); }
+  try { out.steenstraat = buildSteenstraat(g); } catch (e) { console.warn('Steenstraat', e); }
+  try { out.basiliek = buildBasiliek(g); } catch (e) { console.warn('basiliek', e); }
+  try { out.skate = buildSkatepark(g); } catch (e) { console.warn('skatebowl Weijerpark', e); }
+  try { out.house9 = buildHouse9(g); } catch (e) { console.warn('Wieldijkje 9', e); }
+  try { out.gardens = buildWieldijkjeGardens(g, out.house9?.fp); } catch (e) { console.warn('voortuinen Wieldijkje', e); }
   g.boxmeer = out;
   return out;
 }
@@ -249,7 +257,10 @@ function buildStreetBbq(g) {
   const white = std(0xf7f7f2), steel = std(0x9ea4aa, { metalness: 0.6, roughness: 0.4 });
   // partytent
   for (const [x, z] of [[-3, -1.5], [3, -1.5], [-3, 1.5], [3, 1.5]]) grp.add(box(0.06, 2.3, 0.06, steel, x, 1.15, z));
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(4.3, 0.9, 4, 1, true), white); roof.rotation.y = Math.PI / 4; roof.scale.set(1, 1, 0.5); roof.position.y = 2.75; grp.add(roof);
+  // dak als dichte piramide (van onder ook zichtbaar), met een rand van doek eromheen
+  const tentMat = std(0xf7f7f2, { side: THREE.DoubleSide, roughness: 0.85 });
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(4.3, 0.9, 4, 1, false), tentMat); roof.rotation.y = Math.PI / 4; roof.scale.set(1, 1, 0.5); roof.position.y = 2.75; grp.add(roof);
+  grp.add(box(6.1, 0.22, 0.02, tentMat, 0, 2.2, -1.52), box(0.02, 0.22, 3.05, tentMat, -3.04, 2.2, 0), box(0.02, 0.22, 3.05, tentMat, 3.04, 2.2, 0));
   // lange tafel met banken (biertafelset)
   const wood = std(0xb07a46);
   grp.add(box(5, 0.05, 0.7, wood, 0, 0.76, 0));
@@ -261,10 +272,24 @@ function buildStreetBbq(g) {
   for (let k = 0; k < 4; k++) { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.2, 8), std(sauce[k])); b.position.set(-0.5 + k * 0.3, 0.89, 0.2); grp.add(b); }
   grp.add(box(0.4, 0.3, 0.3, std(0xc62828), 1.5, 0.15, 0.2));
   // de barbecue (kogel) naast de tent
-  const black = std(0x1b1b1b, { roughness: 0.5, metalness: 0.3 });
-  const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.34, 18, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), black); bowl.position.set(4.2, 0.8, 0); grp.add(bowl);
-  const lid = new THREE.Mesh(new THREE.SphereGeometry(0.34, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2.4), black); lid.position.set(4.42, 0.88, 0); lid.rotation.z = -1.1; grp.add(lid);
-  for (let i = 0; i < 3; i++) { const a = (i / 3) * Math.PI * 2; const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.8, 6), black); leg.position.set(4.2 + Math.cos(a) * 0.2, 0.4, Math.sin(a) * 0.2); leg.rotation.set(Math.sin(a) * 0.25, 0, -Math.cos(a) * 0.25); grp.add(leg); }
+  // kogelbarbecue: ketel, dichte deksel met greep, aslade en drie poten met wieltjes
+  const black = std(0x1b1b1b, { roughness: 0.45, metalness: 0.35, side: THREE.DoubleSide });
+  const chrome = std(0xc9ccd0, { metalness: 0.9, roughness: 0.25 });
+  const kx = 4.2, ky = 0.82;
+  const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.34, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), black); bowl.position.set(kx, ky, 0); grp.add(bowl);
+  const lid = new THREE.Mesh(new THREE.SphereGeometry(0.345, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), black); lid.position.set(kx, ky + 0.01, 0); grp.add(lid);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.345, 0.012, 6, 32), chrome); rim.rotation.x = Math.PI / 2; rim.position.set(kx, ky + 0.01, 0); grp.add(rim);
+  const knob = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.014, 6, 14, Math.PI), std(0x3e2723)); knob.position.set(kx, ky + 0.36, 0); grp.add(knob);
+  const vent = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.02, 12), chrome); vent.position.set(kx + 0.12, ky + 0.32, 0); vent.rotation.z = -0.4; grp.add(vent);
+  for (const sgn of [-1, 1]) { const hnd = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.025, 0.03), std(0x3e2723)); hnd.position.set(kx + sgn * 0.4, ky - 0.03, 0); grp.add(hnd); }
+  const pan = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.05, 16), chrome); pan.position.set(kx, 0.28, 0); grp.add(pan);
+  for (let i = 0; i < 3; i++) {
+    const a = (i / 3) * Math.PI * 2 + Math.PI / 6;
+    const lx = Math.cos(a), lz = Math.sin(a);
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.68, 6), chrome);
+    leg.position.set(kx + lx * 0.2, 0.36, lz * 0.2); leg.rotation.set(lz * 0.32, 0, -lx * 0.32); grp.add(leg);
+    if (i < 2) { const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.03, 14), std(0x111111)); wh.rotation.x = Math.PI / 2; wh.rotation.y = a; wh.position.set(kx + lx * 0.31, 0.07, lz * 0.31); grp.add(wh); }
+  }
   // vlaggetjes over de straat (rood-wit-groen-geel)
   const cols = [0xd32f2f, 0xffffff, 0x2e7d32, 0xfdd835];
   for (let k = 0; k < 18; k++) {
@@ -273,13 +298,139 @@ function buildStreetBbq(g) {
     f.rotation.x = Math.PI; f.position.set(xx, 3.1 - sag, 3.2); grp.add(f);
   }
   grp.add(box(0.08, 3.4, 0.08, steel, -6, 1.7, 3.2), box(0.08, 3.4, 0.08, steel, 6, 1.7, 3.2));
-  // bord "Straatbarbecue Wieldijkje"
-  const tex = new THREE.CanvasTexture((() => { const c = document.createElement('canvas'); c.width = 768; c.height = 160; const x = c.getContext('2d'); x.fillStyle = '#c62828'; x.fillRect(0, 0, 768, 160); x.fillStyle = '#fff'; x.font = '800 72px "Baloo 2", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('Straat-BBQ Wieldijkje', 384, 84); return c; })());
-  tex.colorSpace = THREE.SRGBColorSpace;
-  const banner = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 0.85), new THREE.MeshStandardMaterial({ map: tex, side: THREE.DoubleSide })); banner.position.set(0, 2.35, 1.52); grp.add(banner);
+  // spandoek "Straat-BBQ Wieldijkje" als strook langs de voorkant, onder het dak (niet erdoorheen)
+  const tex = new THREE.CanvasTexture((() => { const c = document.createElement('canvas'); c.width = 1024; c.height = 112; const x = c.getContext('2d'); x.fillStyle = '#c62828'; x.fillRect(0, 0, 1024, 112); x.fillStyle = '#fdd835'; x.fillRect(0, 0, 1024, 8); x.fillRect(0, 104, 1024, 8); x.fillStyle = '#fff'; x.font = '800 70px "Baloo 2", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('Straat-BBQ Wieldijkje', 512, 60); return c; })());
+  tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  const bannerMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8 });
+  for (const sgn of [1, -1]) {
+    const banner = new THREE.Mesh(new THREE.PlaneGeometry(6.1, 0.66), bannerMat);
+    banner.position.set(0, 1.97, sgn * 1.535); banner.rotation.y = sgn > 0 ? 0 : Math.PI; grp.add(banner);
+  }
   grp.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   g.scene.add(grp);
   const toW = (lx, lz) => { const c = Math.cos(grp.rotation.y), s = Math.sin(grp.rotation.y); return [cx + lx * c + lz * s, cz - lx * s + lz * c]; };
   w.addObstacle([toW(-2.6, -1), toW(2.6, -1), toW(2.6, 1), toW(-2.6, 1)]);
   return { x: cx, z: cz, grill: toW(4.2, 0), host: toW(5.6, 1.6), table: toW(0, 0), grp };
+}
+
+// ------------------------------------------------------------ skatebowl in het Weijerpark
+// Plek en vorm van de luchtfoto van PDOK (2025): een betonnen bowl net ten noorden van De Weijer, met een ondiepe
+// rechthoekige bak, een diepe ronde kom en een uitloper, met een betonnen rand eromheen en een pad naar het plein.
+// De dieptes (1,2 / 2,4 / 1,5 m) zijn geschat. Je kunt erin lopen, fietsen en skaten: de grond volgt de bowl.
+export function buildSkatepark(g) {
+  const w = g.world;
+  const O = w.meta.origin;
+  const L = (X, Y) => [X - O.x, -(Y - O.y)];
+  // vormen in RD (gemeten op de luchtfoto, 8 cm per pixel)
+  const P = (px, py) => L(193990 + px * 0.08, 407050 - py * 0.08);
+  const [r0x, r0z] = P(188, 266), [r1x, r1z] = P(330, 388);
+  const rect = { cx: (r0x + r1x) / 2, cz: (r0z + r1z) / 2, hx: Math.abs(r1x - r0x) / 2, hz: Math.abs(r1z - r0z) / 2, r: 2.6, D: 1.2 };
+  const [ccx, ccz] = P(345, 282);
+  const circ = { cx: ccx, cz: ccz, r: 4.15, D: 2.4 };
+  const [la, lza] = P(330, 330), [lb, lzb] = P(385, 392);
+  const caps = { ax: la, az: lza, bx: lb, bz: lzb, r: 2.6, D: 1.5 };
+  const sdRect = (x, z, s) => { const qx = Math.abs(x - s.cx) - (s.hx - s.r), qz = Math.abs(z - s.cz) - (s.hz - s.r); return Math.hypot(Math.max(qx, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qz), 0) - s.r; };
+  const sdCirc = (x, z, s) => Math.hypot(x - s.cx, z - s.cz) - s.r;
+  const sdCaps = (x, z, s) => { const dx = s.bx - s.ax, dz = s.bz - s.az, l2 = dx * dx + dz * dz; const t = Math.max(0, Math.min(1, ((x - s.ax) * dx + (z - s.az) * dz) / l2)); return Math.hypot(x - s.ax - dx * t, z - s.az - dz * t) - s.r; };
+  const shapes = [[sdRect, rect], [sdCirc, circ], [sdCaps, caps]];
+  const union = (x, z) => Math.min(...shapes.map(([f, s]) => f(x, z, s)));
+  // pad van de bowl schuin naar het plein (rechtsonder op de luchtfoto)
+  const [pa, pza] = P(400, 420), [pb, pzb] = P(480, 560);
+  const path = { ax: pa, az: pza, bx: pb, bz: pzb, r: 1.1 };
+  const DECK = 1.5;
+  const inDeck = (x, z) => union(x, z) < DECK || sdCaps(x, z, path) < 0;
+  // hoogte t.o.v. de rand (0 = rand, negatief = in de bowl): kwartcirkel-overgang naar een vlakke bodem
+  const surf = (x, z) => {
+    let y = 0;
+    for (const [f, s] of shapes) {
+      const d = -f(x, z, s);
+      if (d <= 0) continue;
+      const R = Math.min(1.8, s.D);
+      let h;
+      if (d < 0.06) h = (-s.D + R) * (d / 0.06);
+      else if (d < R + 0.06) { const e = d - 0.06; h = -s.D + (R - Math.sqrt(Math.max(0, R * R - (R - e) * (R - e)))); }
+      else h = -s.D;
+      y = Math.min(y, h);
+    }
+    return y;
+  };
+  const cx = (rect.cx + circ.cx) / 2, cz = (rect.cz + circ.cz) / 2;
+  const yBase = w.groundAt(cx, cz) + 0.15;
+  // raster over het hele terrein
+  const x0 = Math.min(r0x, r1x) - DECK - 1, x1 = Math.max(lb, pb, circ.cx + circ.r) + DECK + 1;
+  const z0 = Math.min(r0z, r1z, circ.cz - circ.r) - DECK - 1, z1 = Math.max(lzb, pzb, r0z, r1z) + DECK + 1;
+  const res = 0.1;
+  const nx = Math.ceil((x1 - x0) / res) + 1, nz = Math.ceil((z1 - z0) / res) + 1;
+  const pos = new Float32Array(nx * nz * 3), col = new Float32Array(nx * nz * 3);
+  const inside = new Uint8Array(nx * nz);
+  const hash = (a, b) => { const s = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return s - Math.floor(s); };
+  for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+    const x = x0 + i * res, z = z0 + j * res, k = j * nx + i;
+    const dk = inDeck(x, z);
+    inside[k] = dk ? 1 : 0;
+    const y = dk ? surf(x, z) : 0;
+    const u = union(x, z);
+    pos[k * 3] = x; pos[k * 3 + 1] = yBase + y; pos[k * 3 + 2] = z;
+    // kleur: licht beton op het dek, iets donkerder in de bowl, een metalen rand (coping) langs de rand
+    let c = 0.8 - Math.min(1, -y / 2.4) * 0.12;
+    if (Math.abs(u) < 0.12) c = 0.55;
+    c *= 0.95 + hash(Math.floor(x * 3), Math.floor(z * 3)) * 0.08;
+    col[k * 3] = c; col[k * 3 + 1] = c * 0.99; col[k * 3 + 2] = c * 0.96;
+  }
+  const idx = [];
+  for (let j = 0; j < nz - 1; j++) for (let i = 0; i < nx - 1; i++) {
+    const a = j * nx + i, b = a + 1, c = a + nx, d = c + 1;
+    if (!(inside[a] && inside[b] && inside[c] && inside[d])) continue;
+    idx.push(a, c, b, b, c, d);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0.02 }));
+  mesh.receiveShadow = true;
+  g.scene.add(mesh);
+  // randje langs de buitenkant van het dek (het dek ligt iets boven het gras)
+  // het terrein binnen het dek naar achteren duwen voor de dieptetest (zelfde truc als bij water), zodat de bowl
+  // niet onder het gras verdwijnt
+  g.scene.traverse((o) => {
+    const a = o.geometry?.attributes?.aWater;
+    if (!a) return;
+    const p = o.geometry.attributes.position;
+    for (let k = 0; k < p.count; k++) {
+      const x = p.getX(k), z = p.getZ(k);
+      if (x < x0 - 3 || x > x1 + 3 || z < z0 - 3 || z > z1 + 3) continue;
+      if (union(x, z) < DECK + 1.2 || sdCaps(x, z, path) < 1.2) a.setX(k, 1);
+    }
+    a.needsUpdate = true;
+  });
+  // bestrating en randen uit de BGT die precies over de bowl liggen (de bak staat als verhard vlak in de kaart)
+  // een eind omlaag, anders liggen ze als een plaat over de bowl heen
+  g.scene.traverse((o) => {
+    if (!o.isMesh || o === mesh || !o.material?.polygonOffset) return;
+    const p = o.geometry?.attributes?.position;
+    if (!p) return;
+    let changed = false;
+    for (let k = 0; k < p.count; k++) {
+      const x = p.getX(k), z = p.getZ(k);
+      if (x < x0 || x > x1 || z < z0 || z > z1) continue;
+      if (union(x, z) < DECK - 0.1) { p.setY(k, p.getY(k) - 6); changed = true; }
+    }
+    if (changed) { p.needsUpdate = true; o.geometry.computeBoundingSphere(); }
+  });
+  // lopen en rijden in de bowl: de grond volgt het beton
+  const orig = w.groundAt.bind(w);
+  w.groundAt = (x, z) => (x > x0 && x < x1 && z > z0 && z < z1 && inDeck(x, z) ? yBase + surf(x, z) : orig(x, z));
+  // twee bankjes en een prullenbak aan de rand
+  const benchMat = std(0x6d4c2f), steel = std(0x3a3d40, { metalness: 0.6 });
+  for (const [px, py, ry] of [[455, 395, 0.9], [440, 470, 0.9]]) {
+    const [bx, bz] = P(px, py);
+    const b = new THREE.Group();
+    b.add(box(1.6, 0.06, 0.4, benchMat, 0, 0.45, 0), box(1.6, 0.3, 0.05, benchMat, 0, 0.65, -0.2));
+    for (const s of [-0.7, 0.7]) b.add(box(0.06, 0.45, 0.4, steel, s, 0.22, 0));
+    b.position.set(bx, w.groundAt(bx, bz), bz); b.rotation.y = ry;
+    g.scene.add(b);
+  }
+  return { x: cx, z: cz, yBase };
 }

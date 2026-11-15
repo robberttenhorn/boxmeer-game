@@ -316,7 +316,7 @@ export class World {
   }
 
   // Eén pand een vast gevelmateriaal geven (btype 2 = muur met vaste baksteen).
-  paintBuilding(rd) {
+  paintBuilding(rd, type = 2) {
     const o = this.meta.origin;
     const x = rd[0] - o.x, z = -(rd[1] - o.y);
     let fp = null;
@@ -337,11 +337,11 @@ export class World {
     };
     let painted = 0;
     for (let v = 0; v < n; v += 3) {
-      if (i8[v * stride + 23] !== 0) continue; // alleen muren
+      if (i8[v * stride + 23] !== 0 && i8[v * stride + 23] !== 2) continue; // alleen muren
       const cx = (f32[v * 7] + f32[(v + 1) * 7] + f32[(v + 2) * 7]) / 3, cz = (f32[v * 7 + 2] + f32[(v + 1) * 7 + 2] + f32[(v + 2) * 7 + 2]) / 3;
       if (cx < fp.minX - 0.5 || cx > fp.maxX + 0.5 || cz < fp.minZ - 0.5 || cz > fp.maxZ + 0.5) continue;
       if (!pointInRing(cx, cz, ring) && edgeDist(cx, cz) > 0.25) continue;
-      for (let k = 0; k < 3; k++) i8[(v + k) * stride + 23] = 2;
+      for (let k = 0; k < 3; k++) i8[(v + k) * stride + 23] = type;
       painted++;
     }
     ib.needsUpdate = true;
@@ -746,6 +746,7 @@ export class World {
           flat varying float vMat;
           flat varying float vSeed;
           flat varying vec3 vWall;
+          flat varying float vNoWin;
           varying vec3 vWN;
           varying vec2 vWXZ;
           varying float vWY;
@@ -753,6 +754,8 @@ export class World {
         .replace('#include <begin_vertex>', `#include <begin_vertex>
           vB = uv; // gevels: uv.x = meters vanaf het begin van de gevel, uv.y = hoogte boven maaiveld
           vType = btype > 1.5 ? 0.0 : btype;
+          // 3 = eigen gevel: lichte steen zonder getekende ramen (Wieldijkje 9); 4 = roodbruine kerkbaksteen zonder getekende ramen (basiliek)
+          vNoWin = btype > 3.5 ? 2.0 : (btype > 2.5 ? 1.0 : 0.0);
           // battr: [zaadje + bouwperiode, veilige onderrand, veilige bovenrand, gevelbreedte]
           vSeed = floor(battr.x / 4.0) * 4.0 / 255.0;
           float age = mod(battr.x, 4.0);
@@ -762,7 +765,11 @@ export class World {
           vWY = position.y;
           float h = fract(vSeed * 7.13);
           // muren: 0 wit pleister, 1 mergel, 2 rode baksteen, 3 bruine baksteen, 4 gele baksteen, 5 grijs
-          if (btype > 1.5) {
+          if (btype > 3.5) {
+            vMat = 2.0; // basiliek: rode baksteen
+          } else if (btype > 2.5) {
+            vMat = 4.0; // eigen gevel (Wieldijkje 9): lichte steen, in de fragmentshader nog lichter gemaakt
+          } else if (btype > 1.5) {
             vMat = 3.0; // vaste roodbruine baksteen (bijv. Ringweg 38)
           } else if (btype < 0.5) {
             float k = pickN(h, 4.0);
@@ -784,6 +791,7 @@ export class World {
           flat varying float vSeed;
           varying vec3 vWN;
           flat varying vec3 vWall;
+          flat varying float vNoWin;
           varying vec2 vWXZ;
           varying float vWY;
           vec3 gInside = vec3(0.0); // kamer achter het raam (voor het avondlicht)
@@ -902,8 +910,11 @@ export class World {
               tn = texture(uWallN, vec3(tuv, float(L))).xyz * 2.0 - 1.0;
               tnAmt = 1.0;
             }
+            // eigen gevel: crèmewitte baksteen, met de structuur van de foto erin
+            if (vNoWin > 0.5 && vNoWin < 1.5) base = srgb(vec3(0.9, 0.88, 0.82)) * (0.82 + 0.45 * dot(base, vec3(0.333)));
+            if (vNoWin > 1.5) base *= vec3(0.92, 0.82, 0.78); // iets bruiner
             // plint van hardsteen
-            float plint = 1.0 - smoothstep(vWall.x + 0.5, vWall.x + 0.52, hgt);
+            float plint = (1.0 - smoothstep(vWall.x + 0.5, vWall.x + 0.52, hgt)) * (1.0 - step(0.5, vNoWin) * 0.8);
             base = mix(base, srgb(vec3(0.24, 0.24, 0.25)) * (0.9 + vnoise(wp * 8.0) * 0.2), plint);
 
             // ramen en deuren in een raster van traveeën
@@ -925,7 +936,7 @@ export class World {
             float fitsY = isDoor
               ? step(0.8 * 2.9, vWall.y - 0.15)
               : step(vWall.x + 0.1, (id.y + 0.28) * 2.9) * step((id.y + 0.86) * 2.9, vWall.y - 0.15);
-            float allowed = step(0.1, r) * fitsX * fitsY;
+            float allowed = step(0.1, r) * fitsX * fitsY * (1.0 - step(0.5, vNoWin));
             if (isDoor) {
               float door = boxMask(f, vec2(0.36, 0.0), vec2(0.64, 0.76), aa);
               float dframe = boxMask(f, vec2(0.34, 0.0), vec2(0.66, 0.78), aa) - door;
