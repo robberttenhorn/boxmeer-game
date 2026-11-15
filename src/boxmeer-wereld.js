@@ -82,9 +82,9 @@ function buildPool(g, L) {
     l.position.set(x, 0, z); l.rotation.y = Math.PI / 2;
     grp.add(l);
   };
-  lounger(-1.2, -WID / 2 - 2.0); lounger(1.0, -WID / 2 - 2.0);
-  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.4, 8), steel); pole.position.set(-0.1, 1.2, -WID / 2 - 2.6); grp.add(pole);
-  const shade = new THREE.Mesh(new THREE.ConeGeometry(1.5, 0.45, 16, 1, true), std(0xf4f1e6, { side: THREE.DoubleSide })); shade.position.set(-0.1, 2.3, -WID / 2 - 2.6); grp.add(shade);
+  lounger(1.4, -WID / 2 - 2.0); lounger(3.4, -WID / 2 - 2.0);
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.4, 8), steel); pole.position.set(2.8, 1.2, -WID / 2 - 2.6); grp.add(pole);
+  const shade = new THREE.Mesh(new THREE.ConeGeometry(1.5, 0.45, 16, 1, true), std(0xf4f1e6, { side: THREE.DoubleSide })); shade.position.set(2.8, 2.3, -WID / 2 - 2.6); grp.add(shade);
   // opblaasflamingo in het water
   const pink = std(0xff7aa8, { roughness: 0.4 });
   const ring = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.16, 10, 20), pink); ring.rotation.x = Math.PI / 2; ring.position.set(1.6, 0.19, 0.6); grp.add(ring);
@@ -105,9 +105,9 @@ function buildPool(g, L) {
     boardEnd: { x: -LEN / 2 + 0.8, y: 0.62, z: 0 },
     water: { x: 0, z: 0, y: 0.12 },
     // camera aan de tuinkant (bij de ligbedden), zodat je niet tegen het huis aankijkt
-    cam: { landscape: { pos: [-3.5, 3.4, -6.5], look: [-1.5, 1.8, 0] }, portrait: { pos: [3.2, 4.2, -5.2], look: [-4.2, 1.4, 1.2] } },
+    cam: { landscape: { pos: [-2.8, 2.4, -5.2], look: [-1.0, 1.4, 0.5] }, portrait: { pos: [-0.5, 4.4, -6.0], look: [-2.5, 1.2, 1.0] } },
     // plek naast het bad om te praten (op het gras aan de zuidkant)
-    talk: [cx + ux * -2 + vx * (-WID / 2 - 3.6), cz + uz * -2 + vz * (-WID / 2 - 3.6)],
+    talk: [cx + ux * 4.4 + vx * (-WID / 2 - 3.4), cz + uz * 4.4 + vz * (-WID / 2 - 3.4)],
     center: [cx, cz],
   };
 }
