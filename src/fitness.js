@@ -506,10 +506,10 @@ function paintGymParts(u, shirt, skin) {
 
 // Ingedrukt houden = curlen, bovenin aanspannen tot de ring vol is, dan loslaten.
 // Te vroeg loslaten of te lang blijven hangen kost punten en kracht. Doel: pomp op 100% binnen de tijd.
-export function startCurls(g, { limit = 50, shirt = 0xe8a33d, skin = 0xf0c8a0 } = {}) {
+export function startCurls(g, { limit = 50, shirt = 0xe8a33d, skin = 0xf0c8a0, title = 'Biceps pompen', tiers: tierList = null, coach: coachList = null } = {}) {
   const ov = document.createElement('div');
   ov.className = 'mini-overlay';
-  ov.innerHTML = `<div class="mini-head"><b>Biceps pompen</b><span class="mini-score"></span><button class="mini-stop" type="button">Stoppen</button></div><canvas class="mini-canvas"></canvas><div class="mini-hint">${g.input.isTouch ? 'Hou je vinger op het scherm om te curlen. Bovenin vasthouden tot de ring vol is, dan loslaten.' : 'Hou spatie of E (of de muis) ingedrukt om te curlen. Bovenin vasthouden tot de ring vol is, dan loslaten.'}</div>`;
+  ov.innerHTML = `<div class="mini-head"><b>${title}</b><span class="mini-score"></span><button class="mini-stop" type="button">Stoppen</button></div><canvas class="mini-canvas"></canvas><div class="mini-hint">${g.input.isTouch ? 'Hou je vinger op het scherm om te curlen. Bovenin vasthouden tot de ring vol is, dan loslaten.' : 'Hou spatie of E (of de muis) ingedrukt om te curlen. Bovenin vasthouden tot de ring vol is, dan loslaten.'}</div>`;
   document.getElementById('hud').prepend(ov);
   document.body.classList.add('pov');
   ov.querySelector('.mini-stop').addEventListener('click', () => g.missions.stop());
@@ -530,9 +530,9 @@ export function startCurls(g, { limit = 50, shirt = 0xe8a33d, skin = 0xf0c8a0 } 
   const SQUEEZE = 0.55; // seconden aanspannen bovenin
   let t = 0, a = 0, stamina = 1, pump = 0, reps = 0, perfect = 0, combo = 0, topT = 0, phase = 'down', burnT = 0, flexT = 0, ended = null, endT = 0, shakeT = 0, wIdx = 0, bannerT = 0, banner = '';
   const shout = (txt, x = 78, y = 28, cls = 'good') => popText(ov, txt, x, y, cls);
-  const tiers = [[0, 'Spaghetti-armpjes'], [0.35, 'Gemiddelde Gulpenaar'], [0.7, 'Bijna strand-klaar'], [1, 'Mosaqua-klaar!']];
+  const tiers = tierList || [[0, 'Spaghetti-armpjes'], [0.35, 'Gemiddelde Gulpenaar'], [0.7, 'Bijna strand-klaar'], [1, 'Mosaqua-klaar!']];
   const tierOf = (v) => tiers.filter(([at]) => v >= at).at(-1)[1];
-  const coach = ['Nog eentje!', 'Kom op, Mosaqua wacht!', 'Voel die pomp!', 'Licht gewicht, baby!', 'Niet opgeven!'];
+  const coach = coachList || ['Nog eentje!', 'Kom op, Mosaqua wacht!', 'Voel die pomp!', 'Licht gewicht, baby!', 'Niet opgeven!'];
   let coachT = 3;
   // voorgetekende plaatjes; opnieuw bij een andere canvasmaat
   const MARGIN = 20;

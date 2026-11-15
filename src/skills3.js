@@ -541,8 +541,8 @@ export function startGnomes(g, spots, { limit = 180 } = {}) {
 
 // Zes burgers op de grill. Tik op een burger om hem om te draaien als de onderkant goudbruin is,
 // en nog eens om hem op te dienen als de andere kant klaar is. Te lang = verbrand.
-export function startBBQ(g, { need = 8, maxBurnt = 3, limit = 60 } = {}) {
-  const ui = overlay(g, 'Burendag-BBQ', '<canvas class="mini-canvas"></canvas>', g.input.isTouch ? 'Tik op een burger: omdraaien als hij goudbruin is, nog een keer om op te dienen' : 'Klik op een burger (of toets 1 t/m 6): omdraaien als hij goudbruin is, nog een keer om op te dienen');
+export function startBBQ(g, { need = 8, maxBurnt = 3, limit = 60, title = 'Burendag-BBQ' } = {}) {
+  const ui = overlay(g, title, '<canvas class="mini-canvas"></canvas>', g.input.isTouch ? 'Tik op een burger: omdraaien als hij goudbruin is, nog een keer om op te dienen' : 'Klik op een burger (of toets 1 t/m 6): omdraaien als hij goudbruin is, nog een keer om op te dienen');
   const cv = ui.ov.querySelector('canvas');
   const ctx = cv.getContext('2d');
   fitCanvas(cv);

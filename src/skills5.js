@@ -998,8 +998,8 @@ function tapScene(ctx, G) {
 
 // Houd ingedrukt om te tappen (spatie, of je vinger op het glas). Laat los als het bier tot de streep staat
 // met een kraag van twee vingers schuim. Te vol = over de rand, te weinig = een half glas.
-export function startTappen(g, { need = 10, maxFails = 3, limit = 75, mcLines = [] } = {}) {
-  const ui = overlay(g, 'Tappen op de Bierfeesten', '<canvas class="mini-canvas tap-canvas"></canvas>',
+export function startTappen(g, { need = 10, maxFails = 3, limit = 75, mcLines = [], title = 'Tappen op de Bierfeesten' } = {}) {
+  const ui = overlay(g, title, '<canvas class="mini-canvas tap-canvas"></canvas>',
     g.input.isTouch ? 'Hou je vinger op het glas om te tappen. Laat los als het bier bij de streep is (met twee vingers schuim).' : 'Hou spatie (of de muis) ingedrukt om te tappen. Laat los als het bier bij de streep is (met twee vingers schuim).');
   const cv = ui.ov.querySelector('canvas');
   const ctx = cv.getContext('2d');

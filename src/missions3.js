@@ -19,7 +19,7 @@ const GROENEWEG_65 = [190419.491 - 190531, -(314258.471 - 314058)];
 
 // punt halverwege een straat, een paar meter opzij (in de voortuin of op de stoep)
 // Willekeurige plekjes in voortuinen (naast de straat) tussen 20 en 75 m van (x, z), minstens 16 m uit elkaar.
-function gnomeSpotsNear(g, x, z, n = 5, rMin = 20, rMax = 75) {
+export function gnomeSpotsNear(g, x, z, n = 5, rMin = 20, rMax = 75) {
   const w = g.world;
   const cands = [];
   for (const [, ax, az, bx, bz] of w.segments) {

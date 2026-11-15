@@ -1,4 +1,4 @@
-// Haalt open data van Gulpen op en zet die om naar compacte bestanden in public/data/.
+// Haalt open data van Boxmeer op en zet die om naar compacte bestanden in public/data/.
 //
 // Bronnen (allemaal gratis en open):
 //   - 3D BAG (api.3dbag.nl): alle gebouwen in 3D (LoD 2.2), CC BY 4.0
@@ -15,64 +15,37 @@ import { Earcut } from 'three/src/extras/Earcut.js';
 
 const OUT = path.resolve('public/data');
 
-// Oorsprong van de spelwereld: de Markt (bij de Zwarte Ruiter), in RD-coördinaten (EPSG:28992).
-const ORIGIN = { x: 190531, y: 314058 };
+// Oorsprong van de spelwereld: het Raadhuisplein in het centrum van Boxmeer, in RD-coördinaten (EPSG:28992).
+const ORIGIN = { x: 193790, y: 406826 };
 
-// Speelgebied (het dorp) en een groter gebied voor de heuvels aan de horizon.
-const CORE = { minX: 189350, minY: 313300, maxX: 191600, maxY: 314750, res: 2 }; // west: de bloemenwijk (Akelei, Bosrank, Aardaker, Bolderik...)
-const WIDE = { minX: 186500, minY: 309800, maxX: 195000, maxY: 318300, res: 20 };
+// Speelgebied: het noordoosten van Boxmeer (Wieldijkje en omgeving, het Weijerpark, het kasteel) en een deel van het centrum
+// (Steenstraat, Raadhuisplein, tot aan de Rembrandt van Rijnstraat). Daaromheen een groter gebied voor de horizon (de Maas).
+const CORE = { minX: 193100, minY: 406400, maxX: 194800, maxY: 407600, res: 2 };
+const WIDE = { minX: 189700, minY: 402800, maxX: 198200, maxY: 411300, res: 20 };
 
+// Plekken (adres en ligging via de PDOK Locatieserver; namen uit online bedrijvengidsen en Visit Brabant)
 const POIS = [
-  { id: 'zwarteruiter', name: 'Herberg De Zwarte Ruiter', address: 'Markt 4', x: 190531, y: 314058 },
-  { id: 'anpiet', name: 'Friture An + Piet', address: 'Rijksweg 60B', x: 190755, y: 314093 },
-  { id: 'jefabels', name: 'Jef Abels Bikes', address: 'Rijksweg 113', x: 190972, y: 314255 },
-  { id: 'brouwerij', name: 'Gulpener Bierbrouwerij', address: 'Rijksweg 16', x: 190488, y: 313954 },
-  { id: 'sophianum', name: 'Sophianum', address: 'Landsraderweg 7', x: 190417, y: 313580 },
-  { id: 'ringweg', name: 'Ringweg', address: 'Ringweg', x: 191104, y: 314313 },
-  { id: 'fcgulpen', name: 'FC Gulpen', address: 'Ringweg 14', x: 191263, y: 314332 },
-  { id: 'zheng', name: 'Cafetaria Zheng', address: 'Looierstraat 103', x: 190585, y: 314084 },
-  { id: 'salma', name: 'Grillroom Pizzeria Salma', address: 'Rijksweg 60A', x: 190748.5, y: 314091.5 },
-  { id: 'mariabeeld', name: 'Mariabeeld', address: 'Top van de Gulperberg', x: 191111.4, y: 313932.2 },
-  // cafés voor de kroegentocht tijdens de Hubertusmarkt
-  { id: 'kroon', name: 'Brasserie De Kroon', address: 'Markt 1', x: 190581, y: 314070, cafe: true },
-  { id: 'neubourg', name: 'Grand Café Neubourg', address: 'Marktstraat 1', x: 190590, y: 314056, cafe: true },
-  { id: 'poort', name: 'Gasterij De Poort', address: 'Rosstraat 23', x: 190486.236, y: 314062.656, cafe: true },
-  { id: 'donnys', name: "Donny's Gezellerie", address: 'Kapelaan Pendersplein 8', x: 190335.838, y: 313970.068 },
-  { id: 'plus', name: 'PLUS supermarkt', address: 'Passage 1', x: 190644.562, y: 314147.266 },
-  { id: 'paulissen', name: 'Bakkerij Paulissen', address: 'Rijksweg 54', x: 190693.472, y: 314060.781 },
-  { id: 'meertens', name: 'De Eetwinkel van het Heuvelland (Meertens)', address: 'Rijksweg 55', x: 190729.929, y: 314107.174 },
-  // Sint-Petruskerk: midden van het kerkgebouw volgens TOP10NL (Kadaster)
-  // tankstation (Rijksweg 70) en busstation: plek volgens TOP10NL
-  { id: 'kerk', name: 'Sint-Petruskerk', address: 'Kapelaan Pendersplein', x: 190389.7, y: 313993.0 },
-  // winkels en bedrijven met een eigen gevel (adres via PDOK Locatieserver; namen uit online bedrijvengidsen)
-  { id: 'knubben', name: "IJzerwaren Knubben", address: 'Rijksweg 6', x: 190437.069, y: 313929.797, shop: true },
-  { id: 'bierhuys', name: "Gulpener Bierhuys", address: 'Rijksweg 20', x: 190541.986, y: 313978.653, shop: true },
-  { id: 'apotheek', name: "Apotheek Gulpen", address: 'Rijksweg 29', x: 190619.969, y: 314057.615, shop: true },
-  { id: 'rousseau', name: "Rousseau Chocolade", address: 'Rijksweg 33', x: 190649.805, y: 314061.995, shop: true },
-  { id: 'pearle', name: "Pearle Opticiens", address: 'Rijksweg 37', x: 190665.535, y: 314076.835, shop: true },
-  { id: 'ortmans', name: "Bakkerij Ortmans", address: 'Rijksweg 40', x: 190636.294, y: 314029.037, shop: true },
-  { id: 'hema', name: "HEMA", address: 'Rijksweg 41', x: 190679.9, y: 314079.337, shop: true },
-  { id: 'top1toys', name: "Top1Toys", address: 'Rijksweg 43', x: 190683.918, y: 314084.47, shop: true },
-  { id: 'euronics', name: "Euronics", address: 'Rijksweg 44', x: 190677.126, y: 314021.385, shop: true },
-  { id: 'da', name: "DA Drogisterij & Parfumerie", address: 'Rijksweg 53', x: 190719.218, y: 314102.458, shop: true },
-  { id: 'pijls', name: "Bakkerij Pijls", address: 'Rijksweg 57', x: 190738.597, y: 314113.53, shop: true },
-  { id: 'decorette', name: "Decorette", address: 'Rijksweg 64', x: 190818.874, y: 314129.474, shop: true },
-  { id: 'tankstation', name: "Tankstation", address: 'Rijksweg 70', x: 190852.616, y: 314149.385, shop: true },
-  { id: 'busstation', name: "Busstation Gulpen", address: 'Rijksweg (busbaan)', x: 190776.7, y: 314078.3, shop: true },
-  { id: 'vvv', name: "VVV / Visit Zuid-Limburg Shop", address: 'Dorpsstraat 27', x: 190557.135, y: 314095.019, shop: true },
-  { id: 'ilgusto', name: "Il Gusto", address: 'Dorpsstraat 26', x: 190526.629, y: 314098.848, shop: true },
-  { id: 'mezzaluna', name: "IJssalon Mezzaluna", address: 'Dorpsstraat 30', x: 190550.148, y: 314047.158, shop: true },
-  { id: 'bormans', name: "Slagerij Bormans", address: 'Rosstraat 9', x: 190464.0, y: 314042.0, shop: true },
-  { id: 'athene', name: "Grieks Restaurant Athene", address: 'Rijksweg 31', x: 190643.558, y: 314059.166, shop: true },
-  { id: 'plankeukens', name: "Plan Keukens", address: 'Rijksweg 21', x: 190564.118, y: 314019.806, shop: true },
-  { id: 'pannekoekenmolen', name: "De Pannekoekenmolen", address: 'Molenweg 2A', x: 190369.248, y: 313667.69, shop: true },
-  { id: 'mosaqua', name: "Mosaqua", address: 'Landsraderweg 11', x: 190401.358, y: 313520.682, shop: true },
-  { id: 'anytime', name: "Anytime Fitness", address: 'Nieuwstraat 8', x: 190659.163, y: 314284.961, shop: true },
-  { id: 'gemeentehuis', name: "Gemeentehuis Gulpen-Wittem", address: 'Willem Vliegenstraat 12', x: 190323.202, y: 314076.821, shop: true },
-  // Joods monument aan de Beversbergweg: herdenkingsmonument volgens de BGT (buiten het gedetailleerde dorpsgebied)
-  { id: 'joodsmonument', name: "Joods monument", address: 'Beversbergweg', x: 188914.8, y: 314574.6, memorial: true },
-  // grijze Volvo XC40 op de oprit (staat niet op de kaart)
-  { id: 'volvo', name: 'Ringweg 38', address: 'Ringweg 38', x: 190985.6, y: 314375.8 },
+  { id: 'raadhuisplein', name: 'Raadhuisplein', address: 'Raadhuisplein', x: 193790, y: 406826 },
+  { id: 'thuis', name: 'Wieldijkje 9', address: 'Wieldijkje 9', x: 194254, y: 407298 },
+  { id: 'wieldijkje', name: 'Wieldijkje', address: 'Wieldijkje', x: 194227.4, y: 407261.5 },
+  { id: 'fysioholland', name: 'FysioHolland', address: 'Rembrandt van Rijnstraat 3', x: 193251.0, y: 406792.4, shop: true },
+  { id: 'weijer', name: 'De Weijer en het Weijerpark', address: 'De Raetsingel 1', x: 193986, y: 406888 },
+  { id: 'basiliek', name: 'Sint-Petrusbasiliek', address: 'Steenstraat 41', x: 194139, y: 406605 },
+  { id: 'kasteel', name: 'Kasteel Boxmeer', address: 'Veerstraat 49', x: 194642.2, y: 407048.5 },
+  { id: 'kruidvat', name: 'Kruidvat', address: 'Steenstraat 71', x: 193973, y: 406689, shop: true },
+  { id: 'bruna', name: 'Bruna', address: 'Steenstraat 55a', x: 194082, y: 406678, shop: true },
+  { id: 'albertheijn', name: 'Albert Heijn', address: 'Steenstraat 136', x: 193814.4, y: 406753.1, shop: true },
+  { id: 'hema', name: 'HEMA', address: 'Steenstraat 94', x: 193954, y: 406678, shop: true },
+  { id: 'rabobank', name: 'Rabobank', address: 'Steenstraat 106', x: 193906.2, y: 406703.8, shop: true },
+  { id: 'nogus', name: "Café Nog'us", address: 'Steenstraat 55b', x: 194072, y: 406667, shop: true, cafe: true },
+  { id: 'esser', name: 'Pub Esser', address: 'Steenstraat 37', x: 194191.3, y: 406557.1, shop: true, cafe: true },
+  { id: 'douairiere', name: 'Grand Café de Douairière', address: 'Steenstraat 156', x: 193724, y: 406790, shop: true, cafe: true },
+  { id: 'centrumcafe', name: "Café-zaal 't Centrum", address: 'Steenstraat 56a', x: 194096, y: 406580, shop: true, cafe: true },
+  { id: 'rembrandt', name: 'IJssalon Rembrandt', address: 'Steenstraat 61b', x: 194010, y: 406667, shop: true },
+  { id: 'azie', name: 'Chinees Indisch Restaurant Azië', address: 'Steenstraat 23', x: 194255, y: 406533, shop: true },
+  { id: 'kapadokya', name: 'Restaurant Kapadokya', address: 'Steenstraat 74', x: 194037.4, y: 406635.5, shop: true },
+  { id: 'cleopatra', name: 'Grillroom Cleopatra', address: 'Steenstraat 22a', x: 194224.8, y: 406524.7, shop: true },
+  { id: 'zuss', name: 'Brasserie Zuss', address: "d'n Entrepot 8", x: 193873, y: 406653, shop: true },
 ];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

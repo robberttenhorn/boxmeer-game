@@ -13,8 +13,8 @@ import { makeCharacter, makeBike, makeSkateboard } from './character.js';
 import { Missions, resetProgress } from './missions.js';
 import { Vehicles, VOLVO_GREY } from './vehicles.js';
 import { Facades } from './facades.js';
-import { buildStatues } from './beelden.js';
-import { buildTuin38, volvoSpot38 } from './tuin38.js';
+import { volvoSpot38 } from './tuin38.js';
+import { buildBoxmeerWorld } from './boxmeer-wereld.js';
 import { Pedestrians } from './pedestrians.js';
 import { Effects, makeFluitje, makeFinishBanner } from './props.js';
 import { statsStart, statsPageview, statsError, statsPerf } from './stats.js';
@@ -98,13 +98,12 @@ class Game {
     try { this.grass = buildGrass(this.world, this.scene, Q); } catch (e) { console.warn('gras', e); }
     this.facades = new Facades(this);
     this.facades.build();
-    try { buildStatues(this.facades); } catch (e) { console.warn('beelden', e); }
     // etalages geven 's avonds licht op de stoep; daarna de kaart met alle lichtbronnen maken
     try {
       for (const f of Object.values(this.facades.frames)) if (f && Number.isFinite(f.x)) this.world.addLightSource(f.x + f.nx * 1.6, f.z + f.nz * 1.6, 2.6, 0.6);
       this.world.bakeLamps();
     } catch (e) { console.warn('lantaarnlicht', e); }
-    try { buildTuin38(this); } catch (e) { console.warn('tuin Ringweg 38', e); }
+    try { buildBoxmeerWorld(this); } catch (e) { console.warn('Boxmeer: tuin, kabouterboom en straat', e); }
     this.cars = new Vehicles(this);
     this.spawnVolvo();
     this.farm = this.findFarm();
@@ -128,7 +127,7 @@ class Game {
     this.setupPost();
 
     bar.style.width = '100%';
-    txt.textContent = 'Gulpen staat klaar.';
+    txt.textContent = 'Boxmeer staat klaar.';
     this.updateCamera(0, true);
     this.applyTime();
     this.renderer.compile(this.scene, this.camera);
@@ -226,9 +225,9 @@ class Game {
 
     // introductie: scherm gedimd en een duidelijke knop, zodat je weet dat je eerst moet doorklikken
     document.body.classList.add('intro');
-    await this.ui.dialog('Gulpen, zaterdag', [
-      { text: 'Welkom in Gullepe!', nl: 'Welkom in Gulpen!' },
-      'Het hele dorp ligt voor je open: loop, fiets, skate of pak een auto. Of trek iemand uit zijn auto, als je durft.',
+    await this.ui.dialog('Boxmeer, zaterdag', [
+      { text: 'Joe! Welkom in Boksmèr!', nl: 'Dag! Welkom in Boxmeer!' },
+      'Je staat voor je huis aan het Wieldijkje. Heel Boxmeer ligt voor je open: loop, fiets, skate of pak een auto. Of trek iemand uit zijn auto, als je durft.',
       'Overal zijn missies te doen. Tik op de minikaart rechtsboven om ze allemaal te zien, en kies zelf waar je begint.',
     ]);
     document.body.classList.remove('intro');
@@ -401,7 +400,7 @@ class Game {
     if (this.nightSince == null) {
       this.nightSince = this.time;
       if (m.active?.id !== 'finale') {
-        const todo = [['nacht', 'De Nachtburgemeester'], ['nachtvangulpen', 'Nacht van Gulpen'], ['bierfeesten', 'de Gulpener Bierfeesten']].filter(([id]) => !m.done.has(id)).map(([, t]) => t);
+        const todo = []; // Boxmeer heeft (nog) geen avondmissies
         setTimeout(() => this.ui.toast(todo.length
           ? `Het is avond: tijd voor ${todo.length > 1 ? todo.slice(0, -1).join(', ') + ' en ' + todo[todo.length - 1] : todo[0]}. Over 3 minuten wordt het weer dag, of zodra je een andere missie begint.`
           : 'Het is avond. Even genieten van het donker, zo komt de zon weer op.', 5200), 600);
@@ -455,12 +454,12 @@ class Game {
     });
     step('speler', () => {
       const p = this.player, [x, z] = this.startPos;
-      p.x = x; p.z = z; p.speed = 0; p.boost = 0; p.heading = Math.PI; p.pose = null; p.lockedFor = false;
+      p.x = x; p.z = z; p.speed = 0; p.boost = 0; p.heading = this.startHeading ?? Math.PI; p.pose = null; p.lockedFor = false;
       p.group.visible = true;
       this.pov = null; this.fading = false;
       this.actGen = (this.actGen || 0) + 1;
       this.unlockUntil = performance.now() + 3000;
-      this.camYaw = 0.2; this.camPitch = 0.24; this.camDist = innerWidth < innerHeight ? 9 : 7;
+      this.camYaw = p.heading + Math.PI + 0.2; this.camPitch = 0.24; this.camDist = innerWidth < innerHeight ? 9 : 7;
       this.input.actionPressed = false;
       this.updateCamera(0, true);
       this.updateVehicleButton();
@@ -492,9 +491,19 @@ class Game {
 
   setupPlayer() {
     const model = makeCharacter({ shirt: 0xe8a33d, pants: 0x2e3f5c, hair: 0x3b2a1a });
-    const start = this.world.spotNear(5, 25);
+    // start op het Wieldijkje, voor nummer 9
+    const home = this.world.meta.pois.find((q) => q.id === 'thuis');
+    let start = home ? this.world.spotNear(...home.pos) : this.world.spotNear(5, 25);
+    // voor het huis op de stoep, met het gezicht naar de straat
+    let heading0 = Math.PI;
+    const st = home && this.world.nearestStreet?.(...home.pos);
+    if (st) {
+      start = this.world.resolve(home.pos[0] + (st.x - home.pos[0]) * 0.7, home.pos[1] + (st.z - home.pos[1]) * 0.7, 0.5);
+      heading0 = Math.atan2(st.x - start[0], st.z - start[1]);
+    }
     this.startPos = start;
-    this.player = { group: new THREE.Group(), model, x: start[0], z: start[1], y: 0, heading: Math.PI, speed: 0, boost: 0, lockedFor: false };
+    this.startHeading = heading0;
+    this.player = { group: new THREE.Group(), model, x: start[0], z: start[1], y: 0, heading: heading0, speed: 0, boost: 0, lockedFor: false };
     this.player.group.add(model);
     this.bike = makeBike(0xff9800);
     this.board = makeSkateboard();
@@ -502,7 +511,7 @@ class Game {
     this.board.visible = false;
     this.player.group.add(this.bike, this.board);
     this.scene.add(this.player.group);
-    this.camYaw = 0.2; // bij de start iets naar rechts: je kijkt de Dorpsstraat in
+    this.camYaw = this.player.heading + Math.PI + 0.2; // bij de start achter je poppetje, je kijkt de straat in
     this.camPitch = 0.24; // iets boven en achter de speler: vooruit kijken met overzicht
     this.camDist = innerWidth < innerHeight ? 9 : 7;
     this.lastManualLook = -10;

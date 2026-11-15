@@ -15,6 +15,7 @@ import { setupWest, setupGroeneweg, setupFitness, setupVerbouwing, setupPloegen,
 import { setupMarkt, marktItems, marktHandlers, MARKT_MISSION_OF } from './missions4.js';
 import { setupGeschiedenis, geschiedenisItems, geschiedenisHandlers, GESCHIEDENIS_MISSION_OF } from './missions5.js';
 import { setupKnotwilg, knotwilgItems, knotwilgHandlers, KNOTWILG_MISSION_OF } from './knotwilg.js';
+import { setupBoxmeer, boxmeerItems, boxmeerHandlers, BOXMEER_MISSION_OF } from './boxmeer.js';
 import { makeSuitcase, makeBankStatement, makeCart, makeVlaaiStack, makeBorrelplank, makeMeatPackage, makeFrikandel, makePuntzak, makeBroodje, makePackage, makeShadyPackage, makeVlaai, makeSnuifdoos, makeDeliveryBag, makeTvCamera, makePitchfork, makeWrench, makeRod, makeFluitje, makeStampPost, makeLantern } from './props.js';
 
 const SAVE_KEY = STORE + 'missies-v2';
@@ -84,196 +85,10 @@ export class Missions {
     };
 
     const add = (key, name, spot, look) => { const npc = (this.npcs[key] = g.addNpc(name, spot, makeCharacter(look))); npc.look = look; return npc; };
-    add('monteur', 'De monteur', spotFor('jefabels'), { shirt: 0x2b2b2b, pants: 0x2b3a4a, apron: 0x5a3b22, hair: 0x2a2a2a, hat: 'cap', hatColor: 0xff9800 });
-    add('frituur', 'Mevrouw achter de toonbank', spotFor('anpiet'), { shirt: 0xffffff, pants: 0x333333, apron: 0xd32f2f, hair: 0x7a5230, hairStyle: 'long', female: true });
-    add('salma', 'De kok van Salma', spotFor('salma'), { shirt: 0xffffff, pants: 0x222222, apron: 0x2e7d32, hair: 0x1a1a1a });
-    add('zheng', 'Achter de toonbank', spotFor('zheng'), { shirt: 0xffffff, pants: 0x222222, apron: 0xb71c1c, hair: 0x111111 });
-    // stagiair van Zheng met telefoon en ringlamp (TikTok-missie, verzonnen figuur)
-    {
-      const f = g.facades.frames.zheng;
-      const sp = f ? g.world.resolve(f.x + f.nx * 2.8 + f.nz * 3.2, f.z + f.nz * 2.8 - f.nx * 3.2, 0.5) : spotFor('zheng', 4);
-      add('stagiair', 'De stagiair van Zheng', sp, { shirt: 0x263238, pants: 0x1b1b1b, hair: 0x3e2723, hat: 'cap', hatColor: 0xc62828, sleeves: 'long' });
-    }
-    add('concierge', 'De conciërge', spotFor('sophianum'), { shirt: 0x546e7a, pants: 0x37474f, hair: 0x9e9e9e });
-    add('brouwer', 'De brouwer', spotFor('brouwerij'), { shirt: 0x0f5132, pants: 0x2e2e2e, apron: 0x8d6e63, hair: 0x5d4037 });
-    add('waard', 'De waard', spotFor('zwarteruiter'), { shirt: 0x111111, pants: 0x222222, apron: 0xf5f5f5, hair: 0x3e2723 });
-
-    // trainer bij het voetbalveld
-    const pitch = g.facades.pitch;
-    const [tx, tz] = pitch ? g.facades.pitchToWorld(pitch.W / 2 + 2, pitch.L / 2 - 18) : poi('fcgulpen').pos;
-    add('trainer', 'De trainer van FC Gulpen', g.world.resolve(tx, tz, 0.5), { shirt: 0x1a237e, pants: 0x1a237e, hair: 0x6d4c41, hat: 'cap', hatColor: 0xc62828 });
-
-    // man in lange jas bij het Mariabeeld
-    const [mx, mz] = poi('mariabeeld').pos;
-    add('jas', 'Man in lange jas', g.world.resolve(mx + 5, mz + 4, 0.5), { shirt: 0x2a2a2a, pants: 0x1a1a1a, hair: 0x111111, hat: 'cap', hatColor: 0x111111, coat: 0x3a3226 });
-
-    // skater bij de Ringweg
-    this.racePath = g.world.streetPath('Ringweg');
-    if (this.racePath.length) {
-      const r = poi('ringweg').pos;
-      const d0 = Math.hypot(this.racePath[0][0] - r[0], this.racePath[0][1] - r[1]);
-      const d1 = Math.hypot(this.racePath.at(-1)[0] - r[0], this.racePath.at(-1)[1] - r[1]);
-      if (d1 < d0) this.racePath.reverse();
-      add('skater', 'Skater', g.world.resolve(this.racePath[0][0] + 3, this.racePath[0][1] + 3, 0.5),
-        { shirt: 0x8e24aa, pants: 0x1a1a1a, hair: 0xffca28, hat: 'cap', hatColor: 0x111111 });
-    }
-
-    // Nachtburgemeester: alleen 's avonds bij de Markt
-    add('nacht', 'De Nachtburgemeester', g.world.spotNear(14, 18),
-      { shirt: 0x1a1a40, pants: 0x101020, hair: 0xdddddd, hat: 'tophat', sash: 0xc62828 });
-    // ambtsketen los, zodat hij pas weer zichtbaar is als je hem hebt teruggebracht
-    const gold = new THREE.MeshStandardMaterial({ color: 0xf2c14e, metalness: 0.95, roughness: 0.2, emissive: 0x3a2a00, emissiveIntensity: 0.3 });
-    const keten = new THREE.Group();
-    const arc = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.014, 6, 24, Math.PI), gold);
-    arc.position.set(0, 1.47, 0.07); arc.rotation.set(0.35, 0, Math.PI);
-    const medal = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.012, 16), gold);
-    medal.rotation.x = Math.PI / 2 - 0.25; medal.position.set(0, 1.35, 0.14);
-    keten.add(arc, medal);
-    this.npcs.nacht.model.userData.parts.body.add(keten);
-    keten.visible = this.done.has('nacht');
-    this.keten = keten;
-
-    // wielrenner onderaan de Gulperberg
-    const climb = g.world.streetPath('Gulperbergweg');
-    if (climb.length > 1) {
-      const h0 = g.world.heightAt(...climb[0]), h1 = g.world.heightAt(...climb.at(-1));
-      const foot = h0 < h1 ? climb[0] : climb.at(-1);
-      add('wielrenner', 'Wielrenner', g.world.resolve(foot[0] + 3, foot[1] + 2, 0.5),
-        { shirt: 0xfdd835, pants: 0x111111, hair: 0x5d4037, hat: 'helmet', hatColor: 0xe53935 });
-    }
-    // boer bij de tractor
-    if (g.farm) add('boer', 'De boer', g.world.resolve(g.farm.x, g.farm.z, 0.5), { shirt: 0x2e5d8a, pants: 0x2b3a4a, hair: 0x8d6e63, hat: 'cap', hatColor: 0x2e7d32, shoes: 0x3e2723 });
-    // visser aan de Gulp
-    if (g.fishing) add('visser', 'Visser', g.world.resolve(g.fishing.x + 1.4, g.fishing.z + 1.4, 0.4), { shirt: 0x556b2f, pants: 0x3e3e30, hair: 0xbdbdbd, hat: 'cap', hatColor: 0x556b2f });
-    // Prins Carnaval op de Markt, met witte hoed en pauwenveer
-    add('carnaval', 'Prins Carnaval', g.world.spotNear(28, -6), { shirt: 0xe53935, pants: 0xfdd835, hair: 0x3b2a1a, hat: 'prins', sash: 0x43a047, coat: 0xe53935, chain: true });
-    // organisator van de Nacht van Gulpen (alleen 's avonds)
-    add('organisator', 'Organisator Nacht van Gulpen', g.world.spotNear(-14, 34), { shirt: 0xff9800, pants: 0x263238, hair: 0x4e342e, coat: 0xff9800 });
-
-    // opa op een bankje bij de Markt
-    // het (netjes geplaatste) bankje het dichtst bij de Markt
-    const spots = (g.world.benchSpots || []).map((b) => ({ ...b, d: Math.hypot(b.x, b.z) })).filter((b) => b.d < 160).sort((a, b) => a.d - b.d);
-    const benchSpot = spots[0] || null;
-    const bench = benchSpot ? [benchSpot.x, benchSpot.z] : [10, 10];
-    add('opa', 'Opa op het benkske', g.world.resolve(bench[0] + 1.2, bench[1] + 0.6, 0.4), { shirt: 0x6d5c4b, pants: 0x4a4a4a, hair: 0xe0e0e0, hat: 'cap', hatColor: 0x3e3e3e });
-
-    // De Razende Reporter op de Markt, met microfoon
-    const rep = add('reporter', 'De Razende Reporter', g.world.spotNear(-6, 14), { shirt: 0x263238, pants: 0x37474f, apron: 0xfdd835, hair: 0x5d4037, hat: 'cap', hatColor: 0xd32f2f });
-    const mic = new THREE.Group();
-    const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.02, 0.25, 8), new THREE.MeshStandardMaterial({ color: 0x111111 }));
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), new THREE.MeshStandardMaterial({ color: 0x9e9e9e, metalness: 0.6 }));
-    head.position.y = 0.15;
-    const flag = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.06, 0.09), new THREE.MeshStandardMaterial({ color: 0xd32f2f }));
-    flag.position.y = 0.07;
-    mic.add(stick, head, flag);
-    mic.position.set(0, -0.1, 0.03);
-    rep.model.userData.parts.handR.add(mic);
-    rep.model.userData.handProp = mic; // rechtop houden, arm naar voren
-    rep.model.userData.holdR = true;
-
-    // nieuwe winkels en Donny's
-    const sp = (id, out = 2.4) => (g.facades.frames[id] ? spotFor(id, out) : null);
-    if (sp('donnys')) add('donnys', "Gastheer van Donny's", sp('donnys', 3.2), { shirt: 0x2f3a2b, pants: 0x212121, apron: 0x6d4c41, hair: 0x3e2723 });
-    if (sp('plus')) add('plus', 'Bedrijfsleider PLUS', sp('plus', 3), { shirt: 0x1b6e3a, pants: 0x263238, hair: 0x5d4037, apron: 0x1b6e3a });
-    // klant met boodschappen op de parkeerplaats van de PLUS (inparkeren)
-    {
-      // de parkeerplaats van de PLUS: het parkeervlak met genoeg vakken dat het dichtst bij de winkel ligt
-      const f = g.facades.frames.plus;
-      const pp = f ? [f.x + f.nx * 3, f.z + f.nz * 3] : poi('plus').pos;
-      const lots = new Map();
-      for (const q of g.world.parkingSpots || []) { if (!lots.has(q.lot)) lots.set(q.lot, []); lots.get(q.lot).push(q); }
-      let best = null;
-      for (const [id, qs] of lots) {
-        if (qs.length < 6) continue;
-        const d = Math.min(...qs.map((q) => Math.hypot(q.x - pp[0], q.z - pp[1])));
-        if (d < 120 && (!best || d < best.d)) best = { id, qs, d };
-      }
-      this.plusLot = best?.id ?? null;
-      // de klant staat op de parkeerplaats zelf, bij het vak dat het dichtst bij de winkel ligt
-      const edge = best ? best.qs.reduce((a, q) => (Math.hypot(q.x - pp[0], q.z - pp[1]) < Math.hypot(a.x - pp[0], a.z - pp[1]) ? q : a)) : null;
-      const spot = edge ? g.world.resolve(edge.x + Math.cos(edge.heading) * 2.6, edge.z - Math.sin(edge.heading) * 2.6, 0.5) : g.world.spotNear(pp[0] + 10, pp[1] + 10);
-      add('klant', 'Klant met boodschappen', spot, { shirt: 0x8e24aa, pants: 0x37474f, hair: 0x9e9e9e, female: true, hairStyle: 'bun', glasses: true, coat: 0x5d4037 });
-    }
-    // schutter bij het sportpark (vogelschieten); de vogelpaal staat op een open plek in de buurt
-    {
-      const fc = poi('fcgulpen').pos;
-      let spotS = null, pole = null;
-      for (let r = 40; r <= 90 && !pole; r += 10) for (let k = 0; k < 12 && !pole; k++) {
-        const a = (k / 12) * Math.PI * 2;
-        const x = fc[0] + Math.sin(a) * r, z = fc[1] + Math.cos(a) * r;
-        if (g.world.insideBuilding(x, z) || g.world.blocked(x, z)) continue;
-        const cls = g.world.classAt(x, z);
-        if (cls !== 'gras' && cls !== 'berm' && cls !== 'onverhard') continue;
-        pole = [x, z];
-        spotS = g.world.resolve(x + 6, z + 6, 0.5);
-      }
-      if (pole) {
-        add('schutter', 'De schutter', spotS, { shirt: 0x1b5e20, pants: 0x1b1b1b, hair: 0x5d4037, hat: 'tophat', sash: 0xfdd835, chain: true, sleeves: 'long', beard: true });
-        this.polePos = pole;
-      }
-    }
-    if (sp('paulissen')) add('bakker', 'De bakker', sp('paulissen'), { shirt: 0xffffff, pants: 0x9e9e9e, apron: 0xf3e6c8, hair: 0x8d6e63, hat: 'chef' });
-    if (sp('meertens')) add('slager', 'De slager', sp('meertens'), { shirt: 0xffffff, pants: 0x37474f, apron: 0xb71c1c, hair: 0x424242 });
-
-    // koster bij de Sint-Petruskerk
-    if (sp('kerk')) add('koster', 'De koster', sp('kerk', 3), { shirt: 0x263238, pants: 0x212121, hair: 0xbdbdbd, coat: 0x212121 });
-
-    // voorwerpen en houdingen die bij de mensen horen
-    g.attachToHand(this.npcs.waard.model, makeFluitje());
-    g.attachToHand(this.npcs.brouwer.model, makeFluitje());
-    g.attachToHand(this.npcs.monteur.model, makeWrench(), { offset: [0, -0.7, 0.05] });
-    if (this.npcs.boer) g.attachToHand(this.npcs.boer.model, makePitchfork(), { offset: [0, -0.7, 0.08] });
-    if (this.npcs.visser) {
-      g.attachToHand(this.npcs.visser.model, makeRod(), { offset: [0, -0.7, 0.05] });
-      this.npcs.visser.model.userData.handProp.rotation.set(0.9, 0, 0);
-      this.npcs.visser.model.userData.handProp = null; // hengel schuin houden, niet rechtop zetten
-      if (g.fishing) this.npcs.visser.heading = Math.atan2(g.fishing.wx - g.fishing.x, g.fishing.wz - g.fishing.z);
-    }
-    if (this.npcs.organisator) g.attachToHand(this.npcs.organisator.model, makeLantern(true), { offset: [0, -0.75, 0.05] });
-    // opa zit op het bankje
-    if (this.npcs.opa) {
-      const o = this.npcs.opa;
-      // midden op de zitting, met de rug naar de leuning
-      const yaw = benchSpot ? benchSpot.yaw : 0;
-      const bx = bench[0] + Math.sin(yaw) * 0.05, bz = bench[1] + Math.cos(yaw) * 0.05;
-      o.pos.set(bx, g.world.groundAt(bx, bz), bz);
-      o.heading = benchSpot ? yaw : (() => { const st = g.world.nearestStreet(bench[0], bench[1]); return st ? Math.atan2(st.x - bench[0], st.z - bench[1]) : 0; })();
-      o.pose = 'sit';
-      o.model.position.y = 0.19; // op de zitting van het bankje, niet erdoorheen
-    }
-    // geen dorpsbewoner op het bankje van opa
-    if (g.peds?.sitters && this.npcs.opa) g.peds.sitters = g.peds.sitters.filter((q) => { if (Math.hypot(q.x - this.npcs.opa.pos.x, q.z - this.npcs.opa.pos.z) > 1.6) return true; g.scene.remove(q.model); return false; });
-    // cameraman naast De Razende Reporter
-    const r = this.npcs.reporter;
-    const cam = g.addNpc('Cameraman', g.world.resolve(r.pos.x + 3.4, r.pos.z + 1.6, 0.4), makeCharacter({ shirt: 0x424242, pants: 0x212121, hair: 0x111111, hat: 'cap', hatColor: 0x424242 }));
-    cam.group.children.forEach((c) => { if (c.isSprite) c.visible = false; }); // geen naambordje
-    const tv = makeTvCamera();
-    tv.position.set(0.2, 1.6, 0.1);
-    cam.model.userData.parts.body.add(tv);
-    cam.pose = 'camera';
-    cam.heading = Math.atan2(r.pos.x - cam.pos.x, r.pos.z - cam.pos.z);
-    cam.marker.visible = false;
-    this.cameraman = cam;
-
-    // nieuwe missies (missions2.js)
-    setupMore(this, g, add);
-    Object.assign(this.extra, moreHandlers);
-    // bloemenwijk (missions3.js)
-    setupWest(this, g, add);
-    setupGroeneweg(this, g, add);
-    setupFitness(this, g, add);
-    setupVerbouwing(this, g, add);
-    setupPloegen(this, g, add);
-    Object.assign(this.extra, westHandlers);
-    // rond de Markt (missions4.js)
-    setupMarkt(this, g, add);
-    Object.assign(this.extra, marktHandlers);
-    // geschiedenis en feesten (missions5.js)
-    setupGeschiedenis(this, g, add);
-    Object.assign(this.extra, geschiedenisHandlers);
-    // achtertuin van Ringweg 38: knotwilgen knotten (knotwilg.js)
-    setupKnotwilg(this, g, add);
-    Object.assign(this.extra, knotwilgHandlers);
+    void spotFor;
+    // Boxmeer: alle mensen en missies staan in boxmeer.js
+    setupBoxmeer(this, g, add);
+    Object.assign(this.extra, boxmeerHandlers);
 
     Object.values(this.npcs).forEach((n) => { n.active = true; });
     this.refresh();
@@ -283,34 +98,7 @@ export class Missions {
   list() {
     const g = this.g;
     const n = this.npcs;
-    const items = [
-      { id: 'fiets', npc: n.monteur, title: 'Fiets afstellen', place: 'Jef Abels Bikes', desc: 'Laat Jef Abels je fiets afstellen en rij een slalom tussen de pionnen.' },
-      { id: 'frikandel', npc: n.frituur, title: 'Frikandel super', place: 'Friture An + Piet', desc: 'Alleen contant! Zoek eerst wat muntgeld bij elkaar.' },
-      { id: 'salma', npc: n.salma, title: 'Bezorgen voor Salma', place: 'Grillroom Pizzeria Salma', desc: 'Bezorg twee bestellingen in de buurt op tijd. Beloning: een Broodje Gulpen.' },
-      { id: 'zheng', npc: n.zheng, title: 'Friet bij Zheng', place: 'Cafetaria Zheng', desc: 'Een frietje halen. Maar met welke saus?' },
-      { id: 'tiktok', npc: n.stagiair, title: 'Viraal met een frietje', place: 'Cafetaria Zheng', desc: 'Film binnen een POV-filmpje van het klaarmaken van een bestelling. Zo veel mogelijk views op TikTok!' },
-      { id: 'skateboard', npc: n.concierge, title: 'In beslag genomen', place: 'Sophianum', desc: 'Haal je skateboard op bij de conciërge. Eerst een overhoring.' },
-      { id: 'race', npc: n.skater, title: 'Ringweg Race', place: 'Ringweg', desc: 'Skatewedstrijd over de Ringweg. Je hebt je skateboard nodig.' },
-      { id: 'vat', npc: n.brouwer, title: 'Vers van \'t vat', place: 'Gulpener Bierbrouwerij', desc: 'Breng een vat naar Herberg De Zwarte Ruiter.' },
-      { id: 'pils', npc: n.waard, title: 'Pilsje', place: 'Herberg De Zwarte Ruiter', desc: 'Help de waard met een overvol dienblad en drink daarna een pilsje. Daarna wordt het avond (of weer ochtend).', repeat: true },
-      { id: 'penalty', npc: n.trainer, title: 'Penalty\'s bij FC Gulpen', place: 'Sportpark FC Gulpen', desc: 'Scoor er minstens 3 van de 5.' },
-      { id: 'deal', npc: n.jas, title: 'Een schimmig zaakje', place: 'Mariabeeld, Gulperberg', desc: 'Iemand op de Gulperberg heeft een pakketje. Niet te veel vragen stellen.' },
-      { id: 'nacht', npc: n.nacht, title: 'De Nachtburgemeester', place: 'Markt (alleen \'s avonds)', desc: 'De Nachtburgemeester is iets kwijt.', nightOnly: true },
-      { id: 'armenfonds', npc: n.koster, title: 'Het verdwenen armenfonds', place: 'Sint-Petruskerk', desc: 'Het offerblok is leeg. Zoek de sporen van deken Haffmans door het dorp.' },
-      { id: 'borrelplank', npc: n.donnys, title: 'De Gezellerie-borrelplank', place: "Donny's Gezellerie", desc: 'Haal worst en vleeswaren bij Slagerij Bormans voor een borrelplank, snel!' },
-      { id: 'karretjes', npc: n.plus, title: 'Karretjes-trein', place: 'PLUS supermarkt', desc: 'Winkelwagentjes zijn door het dorp gezworven. Breng ze in één lange trein terug.' },
-      { id: 'vlaaien', npc: n.bakker, title: 'Vlaaien voor na de mis', place: 'Bakkerij Paulissen', desc: 'Breng drie vlaaien naar de Sint-Petruskerk zonder ergens tegenaan te lopen.' },
-      { id: 'slager', npc: n.slager, title: 'Bestelling in het plat', place: 'De Eetwinkel van het Heuvelland', desc: 'Een klant bestelde in het Gulpens. Pak de juiste spullen en bezorg ze.' },
-      { id: 'hubertus', npc: n.reporter, title: 'Kroegentocht op de Hubertusmarkt', place: 'Markt (De Razende Reporter)', desc: 'Haal verhalen op in vier cafés rond de Markt en geef daarna een live interview.' },
-      { id: 'plat', npc: n.opa, title: 'Plat kalle', place: 'Benkske bij de Markt', desc: 'Opa overhoort je in het Gulpens. Weet jij wat de woorden betekenen?' },
-      { id: 'gulperberg', npc: n.wielrenner, title: 'Gulperberg op!', place: 'Voet van de Gulperberg', desc: 'Fiets zo snel mogelijk naar het Mariabeeld op de top.' },
-      { id: 'geit', npc: n.boer, title: 'De ontsnapte geit', place: 'Boerenland aan de rand van het dorp', desc: 'De geit van de boer is ontsnapt. Ren hem achterna en tik hem drie keer aan.' },
-      { id: 'inparkeren', npc: n.klant, title: 'Inparkeren bij de PLUS', place: 'Parkeerplaats PLUS', desc: 'Vijf keer netjes inparkeren in twee minuten. Botsen kost tijd.' },
-      { id: 'vogelschieten', npc: n.schutter, title: 'Vogelschieten', place: 'Bij het sportpark', desc: 'Schiet bij de schutterij de houten vogel stukje voor stukje van de paal.' },
-      { id: 'vissen', npc: n.visser, title: 'Vissen in de Gulp', place: 'Oever van de Gulp', desc: 'Vang drie vissen. Tik pas als de dobber onder gaat.' },
-      { id: 'polonaise', npc: n.carnaval, title: 'Op tijd voor de optocht', place: 'Markt', desc: 'Prins Carnaval moet klumpkes sjmiete in de optocht. Haal zijn gevolg op, dan kan de optocht beginnen.' },
-      { id: 'nachtvangulpen', npc: n.organisator, title: 'Nacht van Gulpen', place: 'Bij de Markt (alleen \'s avonds)', desc: 'Een proefrondje wandelen langs de stempelposten.', nightOnly: true },
-    ].filter((m) => m.npc).concat(moreItems(n), westItems(n), marktItems(n), geschiedenisItems(n), knotwilgItems(n));
+    const items = boxmeerItems(n);
     for (const m of items) { m.state = this.active?.id === m.id ? 'actief' : this.done.has(m.id) && !m.repeat ? 'klaar' : 'open'; m.best = this.bestLabel(m.id); }
     void g;
     return items;
@@ -320,6 +108,7 @@ export class Missions {
     const g = this.g;
     const night = g.night > 0.5;
     for (const k of ['nacht', 'organisator']) {
+      if (!this.npcs[k]) continue;
       this.npcs[k].group.visible = night;
       this.npcs[k].enabled = night;
     }
@@ -399,7 +188,7 @@ export class Missions {
     npc.lookAtPlayer = true;
     try {
       // bezig met een andere klus?
-      const missionOf = { monteur: 'fiets', frituur: 'frikandel', salma: 'salma', zheng: 'zheng', stagiair: 'tiktok', concierge: 'skateboard', skater: 'race', brouwer: 'vat', waard: 'pils', trainer: 'penalty', jas: 'deal', nacht: 'nacht', wielrenner: 'gulperberg', boer: 'geit', klant: 'inparkeren', schutter: 'vogelschieten', visser: 'vissen', carnaval: 'polonaise', organisator: 'nachtvangulpen', opa: 'plat', reporter: 'hubertus', donnys: 'borrelplank', koster: 'armenfonds', plus: 'karretjes', bakker: 'vlaaien', slager: 'slager', ...MORE_MISSION_OF, ...WEST_MISSION_OF, ...MARKT_MISSION_OF, ...GESCHIEDENIS_MISSION_OF, ...KNOTWILG_MISSION_OF };
+      const missionOf = { ...BOXMEER_MISSION_OF };
       const key = Object.keys(n).find((k) => n[k] === npc);
       const mid = missionOf[key];
       const deliverKeg = key === 'waard' && this.active?.id === 'vat';
@@ -409,7 +198,7 @@ export class Missions {
         if (a !== 1) return;
         this.abort();
       }
-      await (this.handlers[key] || this.extra[key])?.call(this, npc, N, ui, g);
+      await (boxmeerHandlers[key] || this.handlers[key] || this.extra[key])?.call(this, npc, N, ui, g);
     } finally {
       if (this.talkToken === token) this.talking = false;
       g.player.lockedFor = false;

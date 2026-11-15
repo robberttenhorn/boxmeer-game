@@ -1,4 +1,4 @@
-// Bouwt de 3D-wereld van Gulpen op uit de open data in public/data/.
+// Bouwt de 3D-wereld van Boxmeer op uit de open data in public/data/.
 import * as THREE from 'three';
 import { buildVegetation, buildPlanters } from './vegetation.js';
 import { buildHardscape, surfaceLift } from './hardscape.js';
@@ -83,7 +83,7 @@ async function fetchBin(name) {
   return out.buffer;
 }
 
-// Deterministische random, zodat Gulpen er bij iedereen hetzelfde uitziet.
+// Deterministische random, zodat Boxmeer er bij iedereen hetzelfde uitziet.
 export function rng(seed) {
   let s = seed >>> 0;
   return () => {
@@ -131,7 +131,6 @@ export class World {
     if (!Q.laag) { try { this.buildRoofTrim(); } catch (e) { console.warn('dakranden', e); } }
     this.setupCollision(footprints);
     if (!Q.laag) { try { this.buildChimneys(); } catch (e) { console.warn('schoorstenen', e); } }
-    this.paintBuilding([190985.6, 314375.8]); // Ringweg 38 (RD-coördinaten): roodbruine baksteen
     this.buildAO();
 
     step(0.7, 'Bomen planten...');

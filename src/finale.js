@@ -90,8 +90,8 @@ export function buildPartyLights(g, cx, cz) {
 // Uitnodiging: lichtbundel naar de Markt; de finale begint als je daar bent.
 export function inviteFinale(m, g) {
   const markt = g.world.spotNear(20, 0);
-  m.setActive('finale', 'Feest op de Markt!', 'Je hebt alle missies gedaan! De waard van De Zwarte Ruiter geeft een feest voor je op de Markt. Volg de lichtbundel.', '');
-  g.ui.toast('Alle missies gedaan! Er is feest voor je op de Markt.', 3500);
+  m.setActive('finale', 'Feest op het Raadhuisplein!', 'Je hebt alle missies gedaan! De waard van Café Nog\'us geeft een feest voor je op het Raadhuisplein. Volg de lichtbundel.', '');
+  g.ui.toast('Alle missies gedaan! Er is feest voor je op het Raadhuisplein.', 3500);
   g.setDestination(markt, 1e9, () => startFinale(m, g, markt), () => {}, { noTimer: true });
 }
 
@@ -146,9 +146,9 @@ async function startFinale(m, g, markt) {
   m.active.cleanup = restore;
   g.sfx?.play('cheer');
   await ui.dialog(waard.name, [
-    'Daar is ie! Iedereen, even stil! Dit is degene die heel Gullepe heeft geholpen.',
-    'Muizen gevangen bij Pijls, de geit teruggebracht, het matras officieel gemaakt, kabouters gered, de tuin aan de Groeneweg opgehoogd... en ga zo maar door.',
-    'Daarom ben jij vanaf vandaag Ereburger van Gullepe!',
+    'Daar is ie! Iedereen, even stil! Dit is degene die heel Boksmèr heeft geholpen.',
+    'Bommetjes in de achtertuin aan het Wieldijkje, burgers op de straat-BBQ, kabouters uit het Weijerpark, misswijn voor de basiliek, de metworst van zeven el... en ga zo maar door.',
+    'Daarom ben jij vanaf vandaag Ereburger van Boksmèr! Liever schik as un neije boks!',
     'Muziek! Vuurwerk! En een rondje pils van de zaak! Iedereen achter de ereburger aan: polonaise!',
   ]);
   if (m.active?.id !== 'finale') return;
@@ -157,7 +157,7 @@ async function startFinale(m, g, markt) {
   g.sfx?.startMusic();
   clones.forEach((c) => { c.joined = true; });
   g.fx.confetti(g.player.x, w.groundAt(g.player.x, g.player.z) + 3, g.player.z, 220, true);
-  m.progress('Loop met de polonaise over de Markt en kijk naar het vuurwerk');
+  m.progress('Loop met de polonaise over het Raadhuisplein en kijk naar het vuurwerk');
   lights = buildPartyLights(g, cx, cz);
   // geen aftelklok: je stopt het feest zelf als je er genoeg van hebt
   bar = document.createElement('div');
@@ -200,9 +200,9 @@ async function startFinale(m, g, markt) {
   restore();
   m.active.cleanup = null;
   await ui.dialog(waard.name, [
-    'Wat een feest! Heel Gullepe praat er nog jaren over.',
+    'Wat een feest! Heel Boxmeer praat er nog jaren over. Van het Wieldijkje tot de Steenstraat.',
     'Je kunt alle missies opnieuw spelen. Op de kaart zie je je beste tijd of score. Kijk of je die nog kunt verbeteren!',
   ]);
-  m.complete('finale', 'Ereburger van Gullepe!');
+  m.complete('finale', 'Ereburger van Boksmèr!');
 }
 if (typeof location !== 'undefined' && location.search.includes('dev')) window.__finale = inviteFinale;

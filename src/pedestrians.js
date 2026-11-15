@@ -13,9 +13,9 @@ const HAIR = [0x2a1a10, 0x4a3020, 0x111111, 0x9e9e9e, 0xd7b56d, 0x7a3b1f, 0xdddd
 const COATS = [0x3b3f45, 0x5a4632, 0x1f2d3d, 0x6b2e2e, 0x4b5d3a];
 const EYES = [0x4a3222, 0x2f5d8a, 0x3f6b3a, 0x2a1a10];
 const SKIN = [0xf0c8a0, 0xe0ac80, 0xc68642, 0x8d5524, 0xf5d6b4];
-// Gulpense kreten (uit de woordenlijst Gulpens van mijnwoordenboek.nl) met vertaling
-const SHOUTS = [['Toepes!', 'zot'], ['Onnut!', 'viezerik'], ['Behijdskriemer!', 'opschepper'], ['Pliesie!', 'politie']];
-const GREETS = [['Adieje!', 'vaarwel'], ['Joa, joa.', 'ja, ja'], ['Schmiezele, hè?', 'motregen, hè?'], ['Alaaf!', null]];
+// Boksmèrse kreten en groeten (uit openbare woordenlijsten van het Boxmeers) met vertaling
+const SHOUTS = [['Klutje!', 'klein mensje'], ['Wöölese!', 'pubers'], ['Pas op, jong!', null]];
+const GREETS = [['Joe!', 'dag'], ['Joe, joe.', 'dag, dag'], ['Liever schik as un neije boks!', 'liever plezier dan een nieuwe broek'], ['Alaaf!', null]];
 
 export class Pedestrians {
   constructor(game, n) {

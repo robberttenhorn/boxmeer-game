@@ -329,18 +329,23 @@ export function startTuutjes(g) {
 
 // Drie sprongen vanaf de springplank: kracht kiezen, dan op tijd 'bommetje' maken.
 export function startBommetje(g, room) {
-  const L = (x, y, z) => new THREE.Vector3(room.ox + x, y, room.oz + z);
+  // room.rot draait het bad (buiten in een tuin staat het niet langs de assen), room.oy is de hoogte van de grond
+  const rc = Math.cos(room.rot || 0), rs = Math.sin(room.rot || 0), oy = room.oy || 0;
+  const L = (x, y, z) => new THREE.Vector3(room.ox + x * rc + z * rs, oy + y, room.oz - x * rs + z * rc);
+  const dir = L(1, 0, 0).sub(L(0, 0, 0));
   const jumper = makeCharacter({ shirt: 0xf0c8a0, sleeves: 'short', pants: 0x1565c0, shoes: 0xf0c8a0, hair: 0x3b2a1a });
   g.scene.add(jumper);
   g.player.group.visible = false;
   const start = L(room.board.x, 1.32, room.board.z), end = L(room.boardEnd.x, room.boardEnd.y, room.boardEnd.z);
   jumper.position.copy(start);
-  jumper.rotation.y = Math.PI / 2;
+  jumper.rotation.y = Math.PI / 2 + (room.rot || 0);
   // staand scherm (telefoon): camera schuin achter het bad, langs de plank kijken, zodat de plank en het water allebei in beeld zijn
   const portrait = innerWidth < innerHeight;
   const oldFov = g.camera.fov;
   if (portrait) { g.camera.fov = 68; g.camera.updateProjectionMatrix(); }
-  g.pov = portrait ? { pos: L(3.2, 4.2, 5.2), look: L(-4.2, 1.4, -1.2), snap: false } : { pos: L(-1, 3.2, 6), look: L(-1.5, 2.2, -1), snap: false };
+  // een bad buiten kan een eigen camerastand meegeven (bijv. aan de open kant van de tuin, niet tegen het huis aan)
+  const cv = room.cam ? (portrait ? room.cam.portrait : room.cam.landscape) : null;
+  g.pov = cv ? { pos: L(...cv.pos), look: L(...cv.look), snap: false } : portrait ? { pos: L(3.2, 4.2, 5.2), look: L(-4.2, 1.4, -1.2), snap: false } : { pos: L(-1, 3.2, 6), look: L(-1.5, 2.2, -1), snap: false };
   const ui = overlay(g, 'Bommetje!', `<div class="bm-judges"></div><div class="tt-task"><div class="tt-step"></div><div class="tt-hint"></div><div class="tt-bar"><div class="tt-zone" style="left:80%;width:20%"></div><div class="tt-perfect" style="left:92%;width:8%"></div><div class="tt-needle"></div></div></div>`,
     g.input.isTouch ? 'Tik voor de sprong, tik nog eens als je hoog in de lucht bent voor een bommetje' : 'E of spatie: springen, en nog eens in de lucht voor een bommetje');
   const $ = (s) => ui.ov.querySelector(s);
@@ -378,7 +383,7 @@ export function startBommetje(g, room) {
     } else if (phase === 'air') {
       const T = 0.9 + power * 0.5, H = 1.5 + power * 2.6, D = 2.5 + power * 3;
       const k = Math.min(1, t / T);
-      jumper.position.set(end.x + D * k, end.y + H * Math.sin(k * Math.PI * 0.9) - k * (end.y - 0.1) , end.z);
+      jumper.position.set(end.x + dir.x * D * k, end.y + H * Math.sin(k * Math.PI * 0.9) - k * (end.y - (oy + 0.1)), end.z + dir.z * D * k);
       // venster rond het hoogste punt
       const win = Math.abs(k - 0.45) < 0.13;
       if (pr && !tuckAt) {
@@ -394,8 +399,8 @@ export function startBommetje(g, room) {
         phase = 'splash'; t = 0;
         const q = (0.35 + power * 0.65) * (0.3 + tuck * 0.7);
         fx = q;
-        g.fx?.splash(jumper.position.x, room.water.y + 0.1, jumper.position.z, 0.6 + q * 2.6);
-        g.fx?.splash(jumper.position.x + 0.8, room.water.y + 0.1, jumper.position.z - 0.5, 0.4 + q * 1.6);
+        g.fx?.splash(jumper.position.x, oy + room.water.y + 0.1, jumper.position.z, 0.6 + q * 2.6);
+        g.fx?.splash(jumper.position.x + dir.x * 0.8 + dir.z * 0.5, oy + room.water.y + 0.1, jumper.position.z + dir.z * 0.8 - dir.x * 0.5, 0.4 + q * 1.6);
         g.sfx?.play('splash');
         g.pov.shake = 0.25 + q * 0.6;
         if (q > 0.5) {
@@ -413,7 +418,7 @@ export function startBommetje(g, room) {
         ui.score(`Totaal: ${scores.reduce((a, b) => a + b, 0).toFixed(1).replace('.', ',')}`);
       }
     } else if (phase === 'splash') {
-      jumper.position.y = Math.max(-1.5, jumper.position.y - dt * 2);
+      jumper.position.y = Math.max(oy - 1.5, jumper.position.y - dt * 2);
       if (t > 2.2) {
         jump++;
         $('.bm-judges').innerHTML = '';

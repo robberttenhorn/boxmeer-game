@@ -1,671 +1,278 @@
 {
   "origin": {
-    "x": 190531,
-    "y": 314058
+    "x": 193790,
+    "y": 406826
   },
   "core": {
-    "minX": 189350,
-    "minY": 313300,
-    "maxX": 191600,
-    "maxY": 314750,
+    "minX": 193100,
+    "minY": 406400,
+    "maxX": 194800,
+    "maxY": 407600,
     "res": 2,
-    "w": 1125,
-    "h": 725
+    "w": 850,
+    "h": 600
   },
   "wide": {
-    "minX": 186500,
-    "minY": 309800,
-    "maxX": 195000,
-    "maxY": 318300,
+    "minX": 189700,
+    "minY": 402800,
+    "maxX": 198200,
+    "maxY": 411300,
     "res": 20,
     "w": 425,
     "h": 425
   },
   "pois": [
     {
-      "id": "zwarteruiter",
-      "name": "Herberg De Zwarte Ruiter",
-      "address": "Markt 4",
-      "x": 190531,
-      "y": 314058,
+      "id": "raadhuisplein",
+      "name": "Raadhuisplein",
+      "address": "Raadhuisplein",
+      "x": 193790,
+      "y": 406826,
       "pos": [
         0,
         0
       ]
     },
     {
-      "id": "anpiet",
-      "name": "Friture An + Piet",
-      "address": "Rijksweg 60B",
-      "x": 190755,
-      "y": 314093,
+      "id": "thuis",
+      "name": "Wieldijkje 9",
+      "address": "Wieldijkje 9",
+      "x": 194254,
+      "y": 407298,
       "pos": [
-        224,
-        -35
+        464,
+        -472
       ]
     },
     {
-      "id": "jefabels",
-      "name": "Jef Abels Bikes",
-      "address": "Rijksweg 113",
-      "x": 190972,
-      "y": 314255,
+      "id": "wieldijkje",
+      "name": "Wieldijkje",
+      "address": "Wieldijkje",
+      "x": 194227.4,
+      "y": 407261.5,
       "pos": [
-        441,
-        -197
+        437.3999999999942,
+        -435.5
       ]
     },
     {
-      "id": "brouwerij",
-      "name": "Gulpener Bierbrouwerij",
-      "address": "Rijksweg 16",
-      "x": 190488,
-      "y": 313954,
-      "pos": [
-        -43,
-        104
-      ]
-    },
-    {
-      "id": "sophianum",
-      "name": "Sophianum",
-      "address": "Landsraderweg 7",
-      "x": 190417,
-      "y": 313580,
-      "pos": [
-        -114,
-        478
-      ]
-    },
-    {
-      "id": "ringweg",
-      "name": "Ringweg",
-      "address": "Ringweg",
-      "x": 191104,
-      "y": 314313,
-      "pos": [
-        573,
-        -255
-      ]
-    },
-    {
-      "id": "fcgulpen",
-      "name": "FC Gulpen",
-      "address": "Ringweg 14",
-      "x": 191263,
-      "y": 314332,
-      "pos": [
-        732,
-        -274
-      ]
-    },
-    {
-      "id": "zheng",
-      "name": "Cafetaria Zheng",
-      "address": "Looierstraat 103",
-      "x": 190585,
-      "y": 314084,
-      "pos": [
-        54,
-        -26
-      ]
-    },
-    {
-      "id": "salma",
-      "name": "Grillroom Pizzeria Salma",
-      "address": "Rijksweg 60A",
-      "x": 190748.5,
-      "y": 314091.5,
-      "pos": [
-        217.5,
-        -33.5
-      ]
-    },
-    {
-      "id": "mariabeeld",
-      "name": "Mariabeeld",
-      "address": "Top van de Gulperberg",
-      "x": 191111.4,
-      "y": 313932.2,
-      "pos": [
-        580.3999999999942,
-        125.79999999998836
-      ]
-    },
-    {
-      "id": "kroon",
-      "name": "Brasserie De Kroon",
-      "address": "Markt 1",
-      "x": 190581,
-      "y": 314070,
-      "cafe": true,
-      "pos": [
-        50,
-        -12
-      ]
-    },
-    {
-      "id": "neubourg",
-      "name": "Grand Café Neubourg",
-      "address": "Marktstraat 1",
-      "x": 190590,
-      "y": 314056,
-      "cafe": true,
-      "pos": [
-        59,
-        2
-      ]
-    },
-    {
-      "id": "poort",
-      "name": "Gasterij De Poort",
-      "address": "Rosstraat 23",
-      "x": 190486.236,
-      "y": 314062.656,
-      "cafe": true,
-      "pos": [
-        -44.763999999995576,
-        -4.6560000000172295
-      ]
-    },
-    {
-      "id": "donnys",
-      "name": "Donny's Gezellerie",
-      "address": "Kapelaan Pendersplein 8",
-      "x": 190335.838,
-      "y": 313970.068,
-      "pos": [
-        -195.16200000001118,
-        87.9319999999716
-      ]
-    },
-    {
-      "id": "plus",
-      "name": "PLUS supermarkt",
-      "address": "Passage 1",
-      "x": 190644.562,
-      "y": 314147.266,
-      "pos": [
-        113.56200000000536,
-        -89.26600000000326
-      ]
-    },
-    {
-      "id": "paulissen",
-      "name": "Bakkerij Paulissen",
-      "address": "Rijksweg 54",
-      "x": 190693.472,
-      "y": 314060.781,
-      "pos": [
-        162.47200000000885,
-        -2.7810000000172295
-      ]
-    },
-    {
-      "id": "meertens",
-      "name": "De Eetwinkel van het Heuvelland (Meertens)",
-      "address": "Rijksweg 55",
-      "x": 190729.929,
-      "y": 314107.174,
-      "pos": [
-        198.92900000000373,
-        -49.17399999999907
-      ]
-    },
-    {
-      "id": "kerk",
-      "name": "Sint-Petruskerk",
-      "address": "Kapelaan Pendersplein",
-      "x": 190389.7,
-      "y": 313993,
-      "pos": [
-        -141.29999999998836,
-        65
-      ]
-    },
-    {
-      "id": "knubben",
-      "name": "IJzerwaren Knubben",
-      "address": "Rijksweg 6",
-      "x": 190437.069,
-      "y": 313929.797,
+      "id": "fysioholland",
+      "name": "FysioHolland",
+      "address": "Rembrandt van Rijnstraat 3",
+      "x": 193251,
+      "y": 406792.4,
       "shop": true,
       "pos": [
-        -93.93100000001141,
-        128.2029999999795
+        -539,
+        33.59999999997672
       ]
     },
     {
-      "id": "bierhuys",
-      "name": "Gulpener Bierhuys",
-      "address": "Rijksweg 20",
-      "x": 190541.986,
-      "y": 313978.653,
-      "shop": true,
+      "id": "weijer",
+      "name": "De Weijer en het Weijerpark",
+      "address": "De Raetsingel 1",
+      "x": 193986,
+      "y": 406888,
       "pos": [
-        10.986000000004424,
-        79.34700000000885
+        196,
+        -62
       ]
     },
     {
-      "id": "apotheek",
-      "name": "Apotheek Gulpen",
-      "address": "Rijksweg 29",
-      "x": 190619.969,
-      "y": 314057.615,
-      "shop": true,
+      "id": "basiliek",
+      "name": "Sint-Petrusbasiliek",
+      "address": "Steenstraat 41",
+      "x": 194139,
+      "y": 406605,
       "pos": [
-        88.96900000001187,
-        0.3850000000093132
+        349,
+        221
       ]
     },
     {
-      "id": "rousseau",
-      "name": "Rousseau Chocolade",
-      "address": "Rijksweg 33",
-      "x": 190649.805,
-      "y": 314061.995,
-      "shop": true,
+      "id": "kasteel",
+      "name": "Kasteel Boxmeer",
+      "address": "Veerstraat 49",
+      "x": 194642.2,
+      "y": 407048.5,
       "pos": [
-        118.80499999999302,
-        -3.9949999999953434
-      ]
-    },
-    {
-      "id": "pearle",
-      "name": "Pearle Opticiens",
-      "address": "Rijksweg 37",
-      "x": 190665.535,
-      "y": 314076.835,
-      "shop": true,
-      "pos": [
-        134.5350000000035,
-        -18.835000000020955
-      ]
-    },
-    {
-      "id": "ortmans",
-      "name": "Bakkerij Ortmans",
-      "address": "Rijksweg 40",
-      "x": 190636.294,
-      "y": 314029.037,
-      "shop": true,
-      "pos": [
-        105.29399999999441,
-        28.962999999988824
-      ]
-    },
-    {
-      "id": "hema",
-      "name": "HEMA",
-      "address": "Rijksweg 41",
-      "x": 190679.9,
-      "y": 314079.337,
-      "shop": true,
-      "pos": [
-        148.89999999999418,
-        -21.336999999999534
-      ]
-    },
-    {
-      "id": "top1toys",
-      "name": "Top1Toys",
-      "address": "Rijksweg 43",
-      "x": 190683.918,
-      "y": 314084.47,
-      "shop": true,
-      "pos": [
-        152.91800000000512,
-        -26.46999999997206
-      ]
-    },
-    {
-      "id": "euronics",
-      "name": "Euronics",
-      "address": "Rijksweg 44",
-      "x": 190677.126,
-      "y": 314021.385,
-      "shop": true,
-      "pos": [
-        146.1259999999893,
-        36.61499999999069
-      ]
-    },
-    {
-      "id": "da",
-      "name": "DA Drogisterij & Parfumerie",
-      "address": "Rijksweg 53",
-      "x": 190719.218,
-      "y": 314102.458,
-      "shop": true,
-      "pos": [
-        188.21799999999348,
-        -44.45799999998417
-      ]
-    },
-    {
-      "id": "pijls",
-      "name": "Bakkerij Pijls",
-      "address": "Rijksweg 57",
-      "x": 190738.597,
-      "y": 314113.53,
-      "shop": true,
-      "pos": [
-        207.59700000000885,
-        -55.53000000002794
-      ]
-    },
-    {
-      "id": "decorette",
-      "name": "Decorette",
-      "address": "Rijksweg 64",
-      "x": 190818.874,
-      "y": 314129.474,
-      "shop": true,
-      "pos": [
-        287.8740000000107,
-        -71.47399999998743
-      ]
-    },
-    {
-      "id": "tankstation",
-      "name": "Tankstation",
-      "address": "Rijksweg 70",
-      "x": 190852.616,
-      "y": 314149.385,
-      "shop": true,
-      "pos": [
-        321.6160000000091,
-        -91.38500000000931
-      ]
-    },
-    {
-      "id": "busstation",
-      "name": "Busstation Gulpen",
-      "address": "Rijksweg (busbaan)",
-      "x": 190776.7,
-      "y": 314078.3,
-      "shop": true,
-      "pos": [
-        245.70000000001164,
-        -20.29999999998836
-      ]
-    },
-    {
-      "id": "vvv",
-      "name": "VVV / Visit Zuid-Limburg Shop",
-      "address": "Dorpsstraat 27",
-      "x": 190557.135,
-      "y": 314095.019,
-      "shop": true,
-      "pos": [
-        26.135000000009313,
-        -37.01899999997113
-      ]
-    },
-    {
-      "id": "ilgusto",
-      "name": "Il Gusto",
-      "address": "Dorpsstraat 26",
-      "x": 190526.629,
-      "y": 314098.848,
-      "shop": true,
-      "pos": [
-        -4.371000000013737,
-        -40.84799999999814
-      ]
-    },
-    {
-      "id": "mezzaluna",
-      "name": "IJssalon Mezzaluna",
-      "address": "Dorpsstraat 30",
-      "x": 190550.148,
-      "y": 314047.158,
-      "shop": true,
-      "pos": [
-        19.147999999986496,
-        10.842000000004191
-      ]
-    },
-    {
-      "id": "bormans",
-      "name": "Slagerij Bormans",
-      "address": "Rosstraat 9",
-      "x": 190464,
-      "y": 314042,
-      "shop": true,
-      "pos": [
-        -67,
-        16
-      ]
-    },
-    {
-      "id": "athene",
-      "name": "Grieks Restaurant Athene",
-      "address": "Rijksweg 31",
-      "x": 190643.558,
-      "y": 314059.166,
-      "shop": true,
-      "pos": [
-        112.55799999998999,
-        -1.1660000000265427
-      ]
-    },
-    {
-      "id": "plankeukens",
-      "name": "Plan Keukens",
-      "address": "Rijksweg 21",
-      "x": 190564.118,
-      "y": 314019.806,
-      "shop": true,
-      "pos": [
-        33.11799999998766,
-        38.194000000017695
-      ]
-    },
-    {
-      "id": "pannekoekenmolen",
-      "name": "De Pannekoekenmolen",
-      "address": "Molenweg 2A",
-      "x": 190369.248,
-      "y": 313667.69,
-      "shop": true,
-      "pos": [
-        -161.75200000000768,
-        390.3099999999977
-      ]
-    },
-    {
-      "id": "mosaqua",
-      "name": "Mosaqua",
-      "address": "Landsraderweg 11",
-      "x": 190401.358,
-      "y": 313520.682,
-      "shop": true,
-      "pos": [
-        -129.64199999999255,
-        537.3180000000284
-      ]
-    },
-    {
-      "id": "gemeentehuis",
-      "name": "Gemeentehuis Gulpen-Wittem",
-      "address": "Willem Vliegenstraat 12",
-      "x": 190323.202,
-      "y": 314076.821,
-      "shop": true,
-      "pos": [
-        -207.79800000000978,
-        -18.820999999996275
-      ]
-    },
-    {
-      "id": "joodsmonument",
-      "name": "Joods monument",
-      "address": "Beversbergweg",
-      "x": 188914.8,
-      "y": 314574.6,
-      "memorial": true,
-      "pos": [
-        -1616.2000000000116,
-        -516.5999999999767
-      ]
-    },
-    {
-      "id": "volvo",
-      "name": "Ringweg 38",
-      "address": "Ringweg 38",
-      "x": 190985.6,
-      "y": 314375.8,
-      "pos": [
-        454.6000000000058,
-        -317.79999999998836
-      ]
-    },
-    {
-      "id": "anytime",
-      "name": "Anytime Fitness",
-      "address": "Nieuwstraat 8",
-      "x": 190659.163,
-      "y": 314284.961,
-      "shop": true,
-      "pos": [
-        128.16300000000047,
-        -226.96100000001024
-      ]
-    },
-    {
-      "id": "atelier",
-      "name": "Restaurant Atelier",
-      "address": "Markt 9",
-      "x": 190534.321,
-      "y": 314088.682,
-      "pos": [
-        3.3209999999962747,
-        -30.681999999971595
-      ],
-      "shop": true
-    },
-    {
-      "id": "primosa",
-      "name": "Piramide Primosa",
-      "address": "Landsraderweg 7",
-      "x": 190417.153,
-      "y": 313579.507,
-      "pos": [
-        -113.84700000000885,
-        478.49300000001676
-      ]
-    },
-    {
-      "id": "aldi",
-      "name": "Aldi",
-      "address": "Looierstraat 20",
-      "x": 190638.235,
-      "y": 314214.362,
-      "shop": true,
-      "pos": [
-        107.23499999998603,
-        -156.36200000002282
+        852.2000000000116,
+        -222.5
       ]
     },
     {
       "id": "kruidvat",
       "name": "Kruidvat",
-      "address": "Looierstraat 17",
-      "x": 190647.512,
-      "y": 314177.41,
+      "address": "Steenstraat 71",
+      "x": 193973,
+      "y": 406689,
       "shop": true,
       "pos": [
-        116.51199999998789,
-        -119.40999999997439
+        183,
+        137
       ]
     },
     {
-      "id": "zeeman",
-      "name": "Zeeman",
-      "address": "Looierstraat 36",
-      "x": 190592.558,
-      "y": 314162.973,
+      "id": "bruna",
+      "name": "Bruna",
+      "address": "Steenstraat 55a",
+      "x": 194082,
+      "y": 406678,
       "shop": true,
       "pos": [
-        61.55799999998999,
-        -104.97299999999814
+        292,
+        148
       ]
     },
     {
-      "id": "delooier",
-      "name": "Lunchroom De Looier",
-      "address": "Looierstraat 25",
-      "x": 190629.054,
-      "y": 314162.079,
+      "id": "albertheijn",
+      "name": "Albert Heijn",
+      "address": "Steenstraat 136",
+      "x": 193814.4,
+      "y": 406753.1,
       "shop": true,
       "pos": [
-        98.05400000000373,
-        -104.07900000002701
+        24.39999999999418,
+        72.90000000002328
       ]
     },
     {
-      "id": "mudo",
-      "name": "Mudo Kappers",
-      "address": "Looierstraat 34",
-      "x": 190597.859,
-      "y": 314173.261,
+      "id": "hema",
+      "name": "HEMA",
+      "address": "Steenstraat 94",
+      "x": 193954,
+      "y": 406678,
       "shop": true,
       "pos": [
-        66.85899999999674,
-        -115.2609999999986
+        164,
+        148
       ]
     },
     {
-      "id": "primera",
-      "name": "Primera",
-      "address": "Looierstraat 35",
-      "x": 190601.569,
-      "y": 314130.877,
+      "id": "rabobank",
+      "name": "Rabobank",
+      "address": "Steenstraat 106",
+      "x": 193906.2,
+      "y": 406703.8,
       "shop": true,
       "pos": [
-        70.56899999998859,
-        -72.87699999997858
+        116.20000000001164,
+        122.20000000001164
       ]
     },
     {
-      "id": "optiekgulpen",
-      "name": "Optiek Gulpen",
-      "address": "Rijksweg 60",
-      "x": 190731.529,
-      "y": 314078.77,
+      "id": "nogus",
+      "name": "Café Nog'us",
+      "address": "Steenstraat 55b",
+      "x": 194072,
+      "y": 406667,
       "shop": true,
+      "cafe": true,
       "pos": [
-        200.52900000000955,
-        -20.770000000018626
+        282,
+        159
       ]
     },
     {
-      "id": "moustache",
-      "name": "Moustache",
-      "address": "Looierstraat 87",
-      "x": 190593.38,
-      "y": 314098.392,
+      "id": "esser",
+      "name": "Pub Esser",
+      "address": "Steenstraat 37",
+      "x": 194191.3,
+      "y": 406557.1,
       "shop": true,
+      "cafe": true,
       "pos": [
-        62.38000000000466,
-        -40.39199999999255
+        401.29999999998836,
+        268.9000000000233
       ]
     },
     {
-      "id": "enjoy",
-      "name": "Enjoy Feestballonshop",
-      "address": "Rijksweg 38",
-      "x": 190624.519,
-      "y": 314023.331,
+      "id": "douairiere",
+      "name": "Grand Café de Douairière",
+      "address": "Steenstraat 156",
+      "x": 193724,
+      "y": 406790,
+      "shop": true,
+      "cafe": true,
+      "pos": [
+        -66,
+        36
+      ]
+    },
+    {
+      "id": "centrumcafe",
+      "name": "Café-zaal 't Centrum",
+      "address": "Steenstraat 56a",
+      "x": 194096,
+      "y": 406580,
+      "shop": true,
+      "cafe": true,
+      "pos": [
+        306,
+        246
+      ]
+    },
+    {
+      "id": "rembrandt",
+      "name": "IJssalon Rembrandt",
+      "address": "Steenstraat 61b",
+      "x": 194010,
+      "y": 406667,
       "shop": true,
       "pos": [
-        93.51900000000023,
-        34.66899999999441
+        220,
+        159
+      ]
+    },
+    {
+      "id": "azie",
+      "name": "Chinees Indisch Restaurant Azië",
+      "address": "Steenstraat 23",
+      "x": 194255,
+      "y": 406533,
+      "shop": true,
+      "pos": [
+        465,
+        293
+      ]
+    },
+    {
+      "id": "kapadokya",
+      "name": "Restaurant Kapadokya",
+      "address": "Steenstraat 74",
+      "x": 194037.4,
+      "y": 406635.5,
+      "shop": true,
+      "pos": [
+        247.39999999999418,
+        190.5
+      ]
+    },
+    {
+      "id": "cleopatra",
+      "name": "Grillroom Cleopatra",
+      "address": "Steenstraat 22a",
+      "x": 194224.8,
+      "y": 406524.7,
+      "shop": true,
+      "pos": [
+        434.79999999998836,
+        301.29999999998836
+      ]
+    },
+    {
+      "id": "zuss",
+      "name": "Brasserie Zuss",
+      "address": "d'n Entrepot 8",
+      "x": 193873,
+      "y": 406653,
+      "shop": true,
+      "pos": [
+        83,
+        173
       ]
     }
   ],
-  "generated": "2026-11-08T08:21:18.028Z",
+  "generated": "2026-11-14T23:01:42.850Z",
   "attribution": "3D BAG (TU Delft / 3DGI, CC BY 4.0), AHN (Rijkswaterstaat, CC0), BGT en NWB (PDOK, CC0)"
 }

@@ -1,12 +1,12 @@
 // Maakt het beeld dat je ziet als je de link naar de game deelt (WhatsApp, Facebook, iMessage...): public/og.jpg.
 // Een screenshot uit de game als achtergrond, met het logo eroverheen. 1200 x 630 pixels (de gangbare maat).
-// Gebruik: node tools/og-beeld.cjs [achtergrond.jpg]   (standaard: docs/hd/na/computer-dag-gulperberg.jpg)
+// Gebruik: node tools/og-beeld.cjs [achtergrond.jpg]   (standaard: public/laadbeeld.jpg)
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
 
 const root = path.join(__dirname, '..');
-const bg = path.resolve(process.argv[2] || path.join(root, 'docs/hd/na/computer-dag-gulperberg.jpg'));
+const bg = path.resolve(process.argv[2] || path.join(root, 'public/laadbeeld.jpg'));
 const data = 'data:image/jpeg;base64,' + fs.readFileSync(bg).toString('base64');
 const html = `<!doctype html><html><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -25,9 +25,9 @@ const html = `<!doctype html><html><head><meta charset="utf-8">
 </style></head><body>
   <div class="bg"></div><div class="shade"></div>
   <div class="box">
-    <h1 class="logo"><span class="logo-main">L<svg class="logo-pin" viewBox="0 0 64 84"><path d="M32 2C16 2 4 14 4 30c0 21 28 50 28 50s28-29 28-50C60 14 48 2 32 2z" fill="currentColor" stroke="#7a3d00" stroke-width="4"/><path d="M19 33 32 21l13 12v13H37v-8h-10v8h-8z" fill="#fff"/></svg>CALS</span><span class="logo-place">Gulpen</span></h1>
-    <p class="tag">Van de Markt tot de Gulperberg</p>
-    <p class="sub">Loop, fiets of rij door het echte Gulpen.<br>Gratis spelen in je browser.</p>
+    <h1 class="logo"><span class="logo-main">L<svg class="logo-pin" viewBox="0 0 64 84"><path d="M32 2C16 2 4 14 4 30c0 21 28 50 28 50s28-29 28-50C60 14 48 2 32 2z" fill="currentColor" stroke="#7a3d00" stroke-width="4"/><path d="M19 33 32 21l13 12v13H37v-8h-10v8h-8z" fill="#fff"/></svg>CALS</span><span class="logo-place">Boxmeer</span></h1>
+    <p class="tag">Van het Wieldijkje tot de Steenstraat</p>
+    <p class="sub">Loop, fiets of rij door het echte Boxmeer.<br>Gratis spelen in je browser.</p>
   </div>
 </body></html>`;
 

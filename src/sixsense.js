@@ -6,7 +6,7 @@ import { STORE } from './config.js';
 import * as THREE from 'three';
 
 const KEY = STORE + 'sixsense';
-const CODES = ['SIX-GULPE', 'SIX-VLAAI', 'SIX-ALAAF'];
+const CODES = ['SIX-BOKSMER', 'SIX-ERPEL', 'SIX-METWORST'];
 const PINK = '#ff3d9a';
 
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } }
@@ -92,18 +92,18 @@ export class SixSense {
   setup() {
     const g = this.g, w = g.world;
     const poi = (id) => w.meta.pois.find((p) => p.id === id);
-    // drie plekken: bij het busstation, bij het tankstation en op de Markt
+    // drie plekken: bij de Albert Heijn, in het Weijerpark en verderop in de Steenstraat
     const spots = [
-      ['busstation', 'Bij het busstation'],
-      ['tankstation', 'Bij het tankstation'],
-      ['dorpsstraat', 'In de Dorpsstraat'],
+      ['albertheijn', 'Bij de Albert Heijn'],
+      ['weijer', 'In het Weijerpark'],
+      ['steenstraat', 'Verderop in de Steenstraat'],
     ].map(([id, place], i) => {
       let x, z;
-      if (id === 'dorpsstraat') {
-        // een stuk verderop in de Dorpsstraat, niet meteen in beeld bij de start
-        const path = w.streetPath('Dorpsstraat');
-        const [sx, sz] = g.startPos || [5, 25];
-        const pick = path?.length ? path.reduce((a, q) => (Math.abs(Math.hypot(q[0] - sx, q[1] - sz) - 95) < Math.abs(Math.hypot(a[0] - sx, a[1] - sz) - 95) ? q : a)) : null;
+      if (id === 'steenstraat') {
+        // een stuk verderop in de Steenstraat, niet meteen in beeld bij de start
+        const path = w.streetPath('Steenstraat');
+        const p0 = poi('basiliek')?.pos || [0, 0];
+        const pick = path?.length ? path.reduce((a, q) => (Math.hypot(q[0] - p0[0], q[1] - p0[1]) < Math.hypot(a[0] - p0[0], a[1] - p0[1]) ? q : a)) : null;
         [x, z] = pick ? w.spotNear(pick[0] + 4, pick[1] + 4) : w.spotNear(20, 0);
       }
       else { const p = poi(id); if (!p) return null; [x, z] = w.spotNear(...p.pos); }

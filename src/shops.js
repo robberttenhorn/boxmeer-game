@@ -1,5 +1,4 @@
-// Winkels en bedrijven met een eigen gevel op hun echte adres (Rijksweg en centrum),
-// plus het tankstation en het busstation.
+// Winkels en bedrijven met een eigen gevel op hun echte adres (Steenstraat, centrum en de Rembrandt van Rijnstraat in Boxmeer).
 // Namen en adressen komen uit online bedrijvengidsen en kunnen verouderd zijn.
 // De borden, kleuren en etalages zijn verzonnen in een passende stijl: geen echte logo's.
 import * as THREE from 'three';
@@ -8,40 +7,23 @@ import { buildFitnessFront, frameLooierCorner } from './fitness.js';
 const std = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.7, ...extra });
 const mesh = (geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; return m; };
 
-// id -> bord en etalage
+// id -> bord en etalage (Boxmeer: Steenstraat, centrum en de Rembrandt van Rijnstraat)
 export const SHOPS = {
-  knubben: { sign: 'IJzerwaren Knubben', sub: 'gereedschap · huishoud · tuin', bg: '#1f3b5a', fg: '#ffffff', awning: ['#1f3b5a', '#ffffff'], type: 'ijzer' },
-  bierhuys: { sign: 'Gulpener Bierhuys', sub: 'bier uit Gulpen', bg: '#123a24', fg: '#f2c14e', type: 'bier' },
-  apotheek: { sign: 'Apotheek', sub: 'Gulpen', bg: '#ffffff', fg: '#1b7a3a', type: 'apotheek' },
-  rousseau: { sign: 'Rousseau Chocolade', sub: 'bonbons · chocolade', bg: '#3e2316', fg: '#e8c48a', awning: ['#3e2316', '#e8c48a'], type: 'choco' },
-  pearle: { sign: 'Pearle Opticiens', sub: 'brillen · lenzen', bg: '#0f2b52', fg: '#ffffff', type: 'opticien' },
-  ortmans: { sign: 'Bakkerij Ortmans', sub: 'brood · vlaai · banket', bg: '#f1e2c2', fg: '#6b3a16', awning: ['#6b3a16', '#f1e2c2'], type: 'bakker' },
-  hema: { sign: 'HEMA', sub: '', bg: '#c8102e', fg: '#ffffff', type: 'warenhuis' },
-  top1toys: { sign: 'Top1Toys', sub: 'speelgoed', bg: '#ffd400', fg: '#d6001c', type: 'speelgoed' },
-  euronics: { sign: 'Euronics', sub: 'elektronica · witgoed', bg: '#0b3c8c', fg: '#ffffff', type: 'elektro' },
-  da: { sign: 'DA Drogisterij & Parfumerie', sub: '', bg: '#ffffff', fg: '#c8102e', type: 'drogist', automaat: true },
-  pijls: { sign: 'Bakkerij Pijls', sub: 'brood · vlaai · banket', bg: '#5a2e14', fg: '#f6e7c8', awning: ['#5a2e14', '#f6e7c8'], type: 'bakker' },
-  athene: { sign: 'Grieks Restaurant Athene', sub: 'gyros · souvlaki · ouzo', bg: '#0d47a1', fg: '#ffffff', awning: ['#0d47a1', '#ffffff'], type: 'grieks' },
-  plankeukens: { sign: 'Plan Keukens', sub: 'keukens op maat', bg: '#263238', fg: '#ffffff', type: 'keukens' },
-  pannekoekenmolen: { sign: 'De Pannekoekenmolen', sub: 'pannenkoeken', bg: '#8d5524', fg: '#fff3d6', awning: ['#c62828', '#fff3d6'], type: 'pannenkoek' },
-  mosaqua: { sign: 'Mosaqua', sub: 'subtropisch zwemparadijs', bg: '#0288d1', fg: '#ffffff', type: 'zwembad' },
-  gemeentehuis: { sign: 'Gemeentehuis Gulpen-Wittem', sub: '', bg: '#f5f1e6', fg: '#1b2430', type: 'gemeente' },
-  decorette: { sign: 'Decorette', sub: 'verf · behang · raamdecoratie', bg: '#ef7d00', fg: '#ffffff', type: 'wonen' },
-  vvv: { sign: 'VVV · Visit Zuid-Limburg', sub: 'informatie · wandelkaarten · streekproducten', bg: '#0a5aa8', fg: '#ffffff', type: 'vvv', street: 'Dorpsstraat' }, // hoekpand, ingang aan de Dorpsstraat
-  ilgusto: { sign: 'Il Gusto', sub: 'ristorante · pizzeria', bg: '#1b4d2b', fg: '#ffffff', awning: ['#1b4d2b', '#ffffff', '#c62828', '#ffffff'], type: 'restaurant' },
-  mezzaluna: { sign: 'IJssalon Mezzaluna', sub: 'ijs · koffie', bg: '#f7c6d9', fg: '#7a1f4a', awning: ['#f7c6d9', '#ffffff'], type: 'ijs' },
-  atelier: { sign: 'Restaurant Atelier', sub: 'restaurant', bg: '#1d1d1b', fg: '#e3c88f', type: 'restaurant', street: 'Markt' }, // ingang aan de Markt (pand op de hoek met de Dorpsstraat)
-  // Looierstraat en Rijksweg (adressen gecontroleerd met de PDOK Locatieserver)
-  aldi: { sign: 'ALDI', sub: 'supermarkt', bg: '#0b2f6b', fg: '#ffffff', type: 'supermarkt' },
-  kruidvat: { sign: 'Kruidvat', sub: 'drogisterij', bg: '#d6001c', fg: '#ffffff', type: 'drogist' },
-  zeeman: { sign: 'Zeeman', sub: 'textiel · kleding', bg: '#0060a8', fg: '#ffffff', type: 'kleding' },
-  delooier: { sign: 'Lunchroom De Looier', sub: 'ontbijt · lunch · borrel', bg: '#3e3a2e', fg: '#f3e2b8', awning: ['#3e3a2e', '#f3e2b8'], type: 'lunchroom' },
-  mudo: { sign: 'Mudo Kappers', sub: 'kapsalon', bg: '#1b1b1b', fg: '#ffffff', type: 'kapper' },
-  primera: { sign: 'Primera', sub: 'tijdschriften · tabak · loterij', bg: '#4a2c7a', fg: '#ffffff', type: 'tijdschriften' },
-  optiekgulpen: { sign: 'Optiek Gulpen', sub: 'brillen · lenzen · hoortoestellen', bg: '#1d3557', fg: '#ffffff', type: 'opticien' },
-  moustache: { sign: 'Moustache', sub: 'damesmode', bg: '#f3e6e8', fg: '#5a2236', awning: ['#5a2236', '#f3e6e8'], type: 'damesmode' },
-  enjoy: { sign: 'Enjoy Feestballonshop', sub: 'ballonnen · feestartikelen', bg: '#ff4fa3', fg: '#ffffff', type: 'ballonnen' },
-  bormans: { sign: 'Slagerij Bormans', sub: 'vlees · vleeswaren', bg: '#7a1f1f', fg: '#ffffff', awning: ['#7a1f1f', '#ffffff'], type: 'slager' },
+  fysioholland: { sign: 'FysioHolland', sub: 'fysiotherapie', bg: '#ffffff', fg: '#00857c', type: 'fysio', street: 'Rembrandt van Rijnstraat' },
+  kruidvat: { sign: 'Kruidvat', sub: 'drogisterij', bg: '#d6001c', fg: '#ffffff', type: 'drogist', automaat: true, street: 'Steenstraat' },
+  bruna: { sign: 'Bruna', sub: 'boeken · tijdschriften · kantoor', bg: '#003b7a', fg: '#ffd400', type: 'tijdschriften', street: 'Steenstraat' },
+  albertheijn: { sign: 'Albert Heijn', sub: 'supermarkt', bg: '#00a0e2', fg: '#ffffff', type: 'supermarkt', street: 'Steenstraat' },
+  hema: { sign: 'HEMA', sub: '', bg: '#c8102e', fg: '#ffffff', type: 'warenhuis', street: 'Steenstraat' },
+  rabobank: { sign: 'Rabobank', sub: '', bg: '#ffffff', fg: '#000099', type: 'kantoor', street: 'Steenstraat' },
+  nogus: { sign: "Café Nog'us", sub: 'café', bg: '#1b1b1b', fg: '#f2c14e', type: 'cafe', street: 'Steenstraat', terrace: 2 },
+  esser: { sign: 'Pub Esser', sub: 'pub', bg: '#123a24', fg: '#e8c77a', awning: ['#123a24', '#e8c77a'], type: 'bier', street: 'Steenstraat', terrace: 3 },
+  douairiere: { sign: 'Grand Café de Douairière', sub: 'eten · drinken', bg: '#3e2a1e', fg: '#e8c77a', awning: ['#3e2a1e', '#f3e6c8'], type: 'cafe', street: 'Steenstraat', terrace: 4 },
+  centrumcafe: { sign: "Café-zaal 't Centrum", sub: 'café · zaal', bg: '#5a1f1f', fg: '#f5e3c0', type: 'cafe', street: 'Steenstraat', terrace: 2 },
+  rembrandt: { sign: 'IJssalon Rembrandt', sub: 'ijs · koffie', bg: '#f7c6d9', fg: '#7a1f4a', awning: ['#f7c6d9', '#ffffff'], type: 'ijs', street: 'Steenstraat' },
+  azie: { sign: 'Azië', sub: 'restaurant', bg: '#b71c1c', fg: '#ffd54f', type: 'restaurant', street: 'Steenstraat' },
+  kapadokya: { sign: 'Kapadokya', sub: 'restaurant', bg: '#7a1f1f', fg: '#ffffff', awning: ['#7a1f1f', '#ffffff'], type: 'restaurant', street: 'Steenstraat' },
+  cleopatra: { sign: 'Grillroom Cleopatra', sub: 'grillroom', bg: '#1b5e20', fg: '#ffd54f', awning: ['#1b5e20', '#ffd54f'], type: 'grill', street: 'Steenstraat' },
+  zuss: { sign: 'Brasserie Zuss', sub: 'brasserie · terras', bg: '#2b2b2b', fg: '#f3e2b8', type: 'restaurant', terrace: 3 },
 };
 
 // Bouwt alle winkels. fac = Facades-instantie (helpers voor bord, luifel, etalage, deur).
@@ -64,7 +46,7 @@ export function buildShops(fac, pois) {
     }
     f.w = Math.max(2.2, room);
   }
-  for (const id of Object.keys(frames)) shopFacade(fac, frames[id], SHOPS[id]);
+  for (const id of Object.keys(frames)) { shopFacade(fac, frames[id], SHOPS[id]); if (SHOPS[id].terrace) fac.terrace(frames[id], SHOPS[id].terrace); }
   // Anytime Fitness: eigen gevel met een grote glazen pui (fitness.js)
   if (pois.anytime) {
     // de ingang aan de Looierstraat, op de hoek met de Nieuwstraat (zelfde pand als Nieuwstraat 8)
