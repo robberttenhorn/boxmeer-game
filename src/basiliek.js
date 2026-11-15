@@ -63,20 +63,43 @@ export function buildBasiliek(g) {
     const arr = pos.data.array, stride = pos.data.stride, off = pos.offset;
     let changed = false;
     for (let v = 0; v + 2 < pos.count; v += 3) {
-      let minY = Infinity, inside = true;
+      let minY = Infinity, maxY = -Infinity, inside = true;
       for (let k = 0; k < 3; k++) {
         const i = (v + k) * stride + off;
         const x = arr[i], y = arr[i + 1], z = arr[i + 2];
-        minY = Math.min(minY, y);
+        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
         const du = (x - T.cx) * T.ax[0] + (z - T.cz) * T.ax[1], dv = (x - T.cx) * bx[0] + (z - T.cz) * bx[1];
         if (Math.abs(du) > T.half + 0.8 || Math.abs(dv) > T.half + 0.8) inside = false;
       }
-      if (!inside || minY < topY - 0.4) continue;
+      if (!inside) continue;
+      // muren die van lager komen: alleen de punten boven de muurrand omlaag zetten (de muur blijft staan)
+      if (minY < topY - 0.4) {
+        if (maxY > topY + 0.1) {
+          for (let k = 0; k < 3; k++) { const i = (v + k) * stride + off; if (arr[i + 1] > topY) arr[i + 1] = topY; }
+          changed = true;
+        }
+        continue;
+      }
       const i0 = v * stride + off;
       for (let k = 1; k < 3; k++) { const i = (v + k) * stride + off; arr[i] = arr[i0]; arr[i + 1] = arr[i0 + 1]; arr[i + 2] = arr[i0 + 2]; }
       changed = true;
     }
     if (changed) pos.data.needsUpdate = true;
+  });
+  // dakranden, goten en schoorstenen (losse meshes) die boven de torenmuren uitsteken: omlaag tot de rand
+  g.scene.traverse((o) => {
+    if (!o.isMesh || o.isInstancedMesh || o.geometry?.attributes?.btype) return;
+    const pos = o.geometry?.attributes?.position;
+    if (!pos || o.parent !== g.scene) return;
+    let changed = false;
+    for (let k = 0; k < pos.count; k++) {
+      const x = pos.getX(k), y = pos.getY(k), z = pos.getZ(k);
+      if (y < topY + 0.2) continue;
+      const du = (x - T.cx) * T.ax[0] + (z - T.cz) * T.ax[1], dv = (x - T.cx) * bx[0] + (z - T.cz) * bx[1];
+      if (Math.abs(du) > T.half + 0.8 || Math.abs(dv) > T.half + 0.8) continue;
+      pos.setY(k, topY); changed = true;
+    }
+    if (changed) { (pos.data || pos).needsUpdate = true; o.geometry.computeBoundingSphere(); }
   });
   const tower = new THREE.Group();
   tower.position.set(T.cx, 0, T.cz);

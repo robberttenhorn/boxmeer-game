@@ -37,7 +37,10 @@
   <div id="loading">
     <!-- achtergrond: een uitzicht over Boxmeer (zelfde beeld als bij het delen van de link), met een donker verloop voor de leesbaarheid.
          Het beeld maak je opnieuw met tools/laadbeeld.cjs. -->
-    <img class="loading-bg" src="/laadbeeld.jpg" srcset="/laadbeeld-klein.jpg 960w, /laadbeeld.jpg 1920w" sizes="(orientation: portrait) 178vh, 100vw" alt="" decoding="async" onload="this.classList.add('in')" />
+    <picture>
+      <source media="(orientation: portrait) and (max-width: 760px)" srcset="/laadbeeld-staand-klein.jpg 540w, /laadbeeld-staand.jpg 1080w" sizes="100vw" />
+      <img class="loading-bg" src="/laadbeeld.jpg" srcset="/laadbeeld-klein.jpg 960w, /laadbeeld.jpg 1920w" sizes="100vw" alt="" decoding="async" onload="this.classList.add('in')" />
+    </picture>
     <div class="loading-shade"></div>
     <div class="loading-card">
       <!-- logo: "LOCALS" met een kaartspeld als O; de plaatsnaam staat op een straatnaambord (zie src/config.js) -->

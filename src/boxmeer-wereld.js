@@ -310,7 +310,7 @@ function buildStreetBbq(g) {
   g.scene.add(grp);
   const toW = (lx, lz) => { const c = Math.cos(grp.rotation.y), s = Math.sin(grp.rotation.y); return [cx + lx * c + lz * s, cz - lx * s + lz * c]; };
   w.addObstacle([toW(-2.6, -1), toW(2.6, -1), toW(2.6, 1), toW(-2.6, 1)]);
-  return { x: cx, z: cz, grill: toW(4.2, 0), host: toW(5.6, 1.6), table: toW(0, 0), grp };
+  return { x: cx, z: cz, grill: toW(4.2, 0), host: toW(5.6, 1.6), table: toW(0, 0), grp, dir: [ux, uz], street: [st.x, st.z] };
 }
 
 // ------------------------------------------------------------ skatebowl in het Weijerpark

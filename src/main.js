@@ -104,6 +104,7 @@ class Game {
       this.world.bakeLamps();
     } catch (e) { console.warn('lantaarnlicht', e); }
     try { buildBoxmeerWorld(this); } catch (e) { console.warn('Boxmeer: tuin, kabouterboom en straat', e); }
+    this.boxmeerStart();
     this.cars = new Vehicles(this);
     this.spawnVolvo();
     this.farm = this.findFarm();
@@ -459,7 +460,7 @@ class Game {
       this.pov = null; this.fading = false;
       this.actGen = (this.actGen || 0) + 1;
       this.unlockUntil = performance.now() + 3000;
-      this.camYaw = p.heading + Math.PI + 0.2; this.camPitch = 0.24; this.camDist = innerWidth < innerHeight ? 9 : 7;
+      this.camYaw = p.heading + Math.PI; this.camPitch = 0.24; this.camDist = innerWidth < innerHeight ? 9 : 7;
       this.input.actionPressed = false;
       this.updateCamera(0, true);
       this.updateVehicleButton();
@@ -489,6 +490,26 @@ class Game {
 
   // ------------------------------------------------------------ speler
 
+  // Start iets verderop in het Wieldijkje, met de straat-BBQ en Wieldijkje 9 recht voor je.
+  // Kan pas na buildBoxmeerWorld, want dan staat de BBQ er.
+  boxmeerStart() {
+    const home = this.world.meta.pois.find((q) => q.id === 'thuis');
+    const bbq = this.boxmeer?.bbq;
+    if (!bbq?.dir || !home) return;
+    const [ux, uz] = bbq.dir;
+    // aan de kant van de huizen, ruim voorbij de BBQ
+    const side = Math.sign((home.pos[0] - bbq.street[0]) * -uz + (home.pos[1] - bbq.street[1]) * ux) || 1;
+    const sx = bbq.street[0] + ux * 28 - uz * side * 1.5, sz = bbq.street[1] + uz * 28 + ux * side * 1.5;
+    const start = this.world.resolve(sx, sz, 0.5);
+    // kijkrichting: tussen de BBQ en de voorgevel van nummer 9 in
+    const tx = (bbq.x + home.pos[0]) / 2, tz = (bbq.z + home.pos[1]) / 2;
+    const heading0 = Math.atan2(tx - start[0], tz - start[1]);
+    this.startPos = start;
+    this.startHeading = heading0;
+    Object.assign(this.player, { x: start[0], z: start[1], heading: heading0 });
+    this.camYaw = heading0 + Math.PI;
+  }
+
   setupPlayer() {
     const model = makeCharacter({ shirt: 0xe8a33d, pants: 0x2e3f5c, hair: 0x3b2a1a });
     // start op het Wieldijkje, voor nummer 9
@@ -511,7 +532,7 @@ class Game {
     this.board.visible = false;
     this.player.group.add(this.bike, this.board);
     this.scene.add(this.player.group);
-    this.camYaw = this.player.heading + Math.PI + 0.2; // bij de start achter je poppetje, je kijkt de straat in
+    this.camYaw = this.player.heading + Math.PI; // bij de start achter je poppetje, je kijkt naar de BBQ en nummer 9
     this.camPitch = 0.24; // iets boven en achter de speler: vooruit kijken met overzicht
     this.camDist = innerWidth < innerHeight ? 9 : 7;
     this.lastManualLook = -10;

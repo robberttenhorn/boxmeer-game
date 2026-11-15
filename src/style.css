@@ -860,11 +860,15 @@ body:has(.mini-overlay) #install-tip { display: none; }
 }
 /* staand scherm: alles in het midden, donker van boven naar beneden, met het dorp achter het logo */
 @media (orientation: portrait) and (max-width: 760px) {
-  #loading { place-items: center; }
-  .loading-bg { object-position: 79% 50%; }
-  .loading-shade { background: linear-gradient(180deg, rgba(16,26,38,.5) 0%, rgba(16,26,38,.34) 30%, rgba(16,26,38,.6) 62%, rgba(16,26,38,.84) 100%); }
-  .loading-card { text-align: center; padding: 24px; }
-  #loading .logo { font-size: clamp(56px, 17vw, 96px); margin-left: 0; }
+  /* eigen staand beeld (toren en poppetje bovenin), de tekst onderin zodat het beeld zichtbaar blijft */
+  #loading { place-items: end center; }
+  .loading-bg { object-position: 50% 0%; }
+  .loading-shade { background: linear-gradient(180deg, rgba(16,26,38,0) 0%, rgba(16,26,38,0) 34%, rgba(16,26,38,.55) 50%, rgba(16,26,38,.86) 66%, rgba(16,26,38,.93) 100%); }
+  .loading-card { text-align: center; padding: 16px 20px max(20px, env(safe-area-inset-bottom)); }
+  #loading .logo { font-size: clamp(48px, 14vw, 80px); margin-left: 0; }
+  #loading .tagline { margin-top: 0.5em; }
+  #loading .load-slot { margin-top: 14px; }
+  .load-panel { margin-top: 12px; padding: 10px 14px; }
   #loading .load-slot { place-items: center; }
   #loading .load-busy { margin: 0 auto; }
   #loading .keys, #loading #quality-pick .qp-row { justify-content: center; }

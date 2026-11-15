@@ -231,7 +231,9 @@ export function buildHouse9(g) {
   grp.add(groundQuad([toW(-2.2, 0.1), toW(blockU0, 0.1), toW(blockU0, depth), toW(-2.2, depth)], yG + gy, gravelMat, 1.6));
   const klMat = new THREE.MeshStandardMaterial({ map: T.klinker, roughness: 0.9 });
   grp.add(groundQuad([toW(blockU0, eD + 0.02), toW(e1 + 4.2, eD + 0.02), toW(e1 + 4.2, depth), toW(blockU0, depth)], yG + gy - 0.01, klMat, 2.2));
-  grp.add(groundQuad([toW(e1, 0.05), toW(e1 + 4.2, 0.05), toW(e1 + 4.2, eD + 0.03), toW(e1, eD + 0.03)], yG + gy - 0.01, klMat, 2.2));
+  // de oprit loopt naast het huis door naar achteren (daar staat de camper)
+  grp.add(groundQuad([toW(e1, -4.6), toW(e1 + 4.6, -4.6), toW(e1 + 4.6, eD + 0.03), toW(e1, eD + 0.03)], yG + gy - 0.01, klMat, 2.2));
+  grp.add(groundQuad([toW(e1 + 4.2, eD + 0.02), toW(e1 + 4.6, eD + 0.02), toW(e1 + 4.6, depth), toW(e1 + 4.2, depth)], yG + gy - 0.01, klMat, 2.2));
   // band tussen grind en oprit
   const curb = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.1, depth), std(0x9a968e)); add(curb, blockU0, gy + 0.02, depth / 2);
   // buxus: een grote bol voor het entreeblok en een paar kleinere, een laag haagje links
@@ -257,13 +259,13 @@ export function buildHouse9(g) {
   // wat grote keien in het grind
   for (const [u, o, r] of [[0.6, 1.2, 0.22], [4.2, depth - 0.6, 0.18], [3.4, 0.8, 0.15]]) { const s = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), std(0x8a8279)); s.scale.y = 0.6; add(s, u, gy + r * 0.4, o); }
 
-  // camper op de oprit, met de neus naar de straat
+  // camper helemaal op de oprit, naast het huis, met de neus naar de straat (de neus blijft voor de stoep)
   const camper = makeCamper();
-  add(camper, e1 + 1.9, gy, Math.max(eD + 4.2, depth - 2.2));
+  const cu = e1 + 2.6, co = depth - 3.4 - 0.5;
+  add(camper, cu, gy, co);
   camper.rotation.y = F.rotY; // de neus wijst naar buiten (lokale +z)
   // botsing: entreeblok en camper
   w.addObstacle([toW(e0, 0), toW(e1, 0), toW(e1, eD), toW(e0, eD)]);
-  const cu = e1 + 1.9, co = Math.max(eD + 4.2, depth - 2.2);
   w.addObstacle([toW(cu - 1.15, co - 3.6), toW(cu + 1.15, co - 3.6), toW(cu + 1.15, co + 3.6), toW(cu - 1.15, co + 3.6)]);
 
   grp.traverse((o) => { if (o.isMesh) { o.castShadow = o.castShadow || false; o.receiveShadow = true; } });
